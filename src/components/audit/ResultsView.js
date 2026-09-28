@@ -329,12 +329,12 @@ export default function ResultsView({
 
             <div className="space-y-3">
               <a
-                href={`https://wa.me/919876543210?text=${encodeURIComponent(
+                href={`https://wa.me/918446078867?text=${encodeURIComponent(
                   `Hi Shakktii AI, I just completed the Lead Protection Audit for ${formData.firmName} (${formData.microMarket}). My score is ${analysis.totalScore}/18. I would like to schedule our strategy call.`
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl bg-[#25D366] text-white font-bold text-sm shadow-md hover:brightness-105 active:scale-98"
+                className="w-full inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl bg-[#25D366] text-white font-bold text-sm shadow-md hover:brightness-105 active:scale-98 animate-button-blink"
               >
                 <span>Confirm Session on WhatsApp</span>
                 <ExternalLink className="w-4 h-4" />

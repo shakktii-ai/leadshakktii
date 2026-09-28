@@ -51,10 +51,10 @@ export default function AuditContainer({
     setIsSubmitting(true);
 
     try {
-      // Calculate audit analysis on client
-      const calculatedAnalysis = calculateAuditAnalysis(selectedAnswers, submittedFormData);
+      // Calculate initial client analysis as baseline/fallback
+      let finalAnalysis = calculateAuditAnalysis(selectedAnswers, submittedFormData);
 
-      // Attempt API submission to MongoDB
+      // Submit to backend API which triggers OpenAI report generation and MongoDB save
       try {
         const response = await fetch('/api/audit-submit', {
           method: 'POST',
@@ -62,7 +62,6 @@ export default function AuditContainer({
           body: JSON.stringify({
             answers: selectedAnswers,
             formData: submittedFormData,
-            analysis: calculatedAnalysis,
           }),
         });
 
@@ -71,17 +70,20 @@ export default function AuditContainer({
           console.error('API submission returned error:', data.error);
         } else {
           console.log('Lead audit saved successfully with ID:', data.leadId);
+          if (data.analysis) {
+            finalAnalysis = data.analysis;
+          }
         }
       } catch (e) {
-        console.warn('API post error, continuing with client analysis:', e);
+        console.warn('API post error, continuing with fallback analysis:', e);
       }
 
-      setAnalysis(calculatedAnalysis);
+      setAnalysis(finalAnalysis);
       setShowResultsModal(true);
     } catch (err) {
       console.error('Audit submit error:', err);
-      const calculatedAnalysis = calculateAuditAnalysis(selectedAnswers, submittedFormData);
-      setAnalysis(calculatedAnalysis);
+      const fallbackAnalysis = calculateAuditAnalysis(selectedAnswers, submittedFormData);
+      setAnalysis(fallbackAnalysis);
       setShowResultsModal(true);
     } finally {
       setIsSubmitting(false);

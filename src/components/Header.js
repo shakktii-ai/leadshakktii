@@ -59,7 +59,7 @@ export default function Header({ onStartAudit }) {
           </a>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-8 text-[14px] font-semibold text-stone-600">
+          {/* <nav className="hidden md:flex items-center gap-8 text-[14px] font-semibold text-stone-600">
             <button
               type="button"
               onClick={() => scrollToSection('solutions-section')}
@@ -88,7 +88,7 @@ export default function Header({ onStartAudit }) {
             >
               Contact
             </button>
-          </nav>
+          </nav> */}
 
           {/* Header Action Button */}
           <div className="hidden sm:flex items-center gap-4">

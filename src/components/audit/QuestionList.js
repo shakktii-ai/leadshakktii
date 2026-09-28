@@ -51,50 +51,47 @@ export default function QuestionList({ selectedAnswers = {}, onSelectOption }) {
             }`}
           >
             {/* Question Header */}
-            <div className="p-5 sm:p-6 bg-white border-b border-stone-100">
-              <div className="flex items-start gap-4">
-                {/* Number & Icon Pill */}
-                <div
-                  className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-colors ${
-                    isAnswered
-                      ? 'bg-brand-primary text-white shadow-sm shadow-brand-primary/30'
-                      : 'bg-brand-primary/10 text-brand-primary'
-                  }`}
-                >
-                  {isAnswered ? <Check className="w-6 h-6" /> : icon}
-                </div>
-
-                <div className="flex-1 min-w-0">
-                  {/* Category Chip & Done Indicator */}
-                  <div className="flex items-center justify-between gap-2 mb-1.5">
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-stone-100 text-stone-700 text-xs font-bold uppercase tracking-wider">
-                      <span>Question {qIndex + 1} of {AUDIT_QUESTIONS.length}</span>
-                      <span className="text-stone-300">·</span>
-                      <span className="text-brand-primary font-extrabold">{item.category.split('. ')[1] || item.category}</span>
-                    </span>
-
-                    {isAnswered && (
-                      <span className="inline-flex items-center gap-1 text-xs font-bold text-brand-primary bg-brand-primary/10 px-2.5 py-1 rounded-full shrink-0">
-                        <CheckCircle2 className="w-3.5 h-3.5" />
-                        Selected
-                      </span>
-                    )}
+            <div className="p-4 sm:p-6 bg-white border-b border-stone-100">
+              {/* Top Row: Icon + Category Badge + Selected Status */}
+              <div className="flex items-center justify-between gap-2 mb-2.5 sm:mb-3">
+                <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
+                  <div
+                    className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
+                      isAnswered
+                        ? 'bg-brand-primary text-white shadow-xs shadow-brand-primary/30'
+                        : 'bg-brand-primary/10 text-brand-primary'
+                    }`}
+                  >
+                    {isAnswered ? <Check className="w-4 h-4" /> : icon}
                   </div>
 
-                  {/* Question Text */}
-                  <h3 className="text-lg sm:text-xl font-bold text-brand-dark leading-snug">
-                    {item.question}
-                  </h3>
-
-                  {/* Contextual Eye-Opener note if available */}
-                  {item.eyeOpener && (
-                    <div className="mt-3 flex items-start gap-2 text-xs sm:text-sm text-stone-500 bg-brand-surface border border-stone-200/80 rounded-lg px-3 py-2">
-                      <Lightbulb className="w-4 h-4 text-brand-accent shrink-0 mt-0.5" />
-                      <span>{item.eyeOpener}</span>
-                    </div>
-                  )}
+                  <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-stone-100 text-stone-600 text-[10px] sm:text-[11px] font-medium uppercase tracking-wider">
+                    <span className="font-semibold">Question {qIndex + 1} of {AUDIT_QUESTIONS.length}</span>
+                    <span className="text-stone-300">·</span>
+                    <span className="text-brand-primary font-bold">{item.category.split('. ')[1] || item.category}</span>
+                  </span>
                 </div>
+
+                {isAnswered && (
+                  <span className="inline-flex items-center gap-1 text-[10px] sm:text-xs font-bold text-brand-primary bg-brand-primary/10 px-2 py-0.5 rounded-full shrink-0">
+                    <CheckCircle2 className="w-3 h-3" />
+                    <span>Selected</span>
+                  </span>
+                )}
               </div>
+
+              {/* Full Width Question Text */}
+              <h3 className="text-base sm:text-xl font-bold text-brand-dark leading-snug w-full">
+                {item.question}
+              </h3>
+
+              {/* Contextual Eye-Opener note - 100% Full Width on Mobile & Desktop */}
+              {item.eyeOpener && (
+                <div className="mt-3 sm:mt-3.5 w-full flex items-start gap-2.5 text-xs sm:text-sm text-stone-600 bg-amber-50/70 border border-amber-200/80 rounded-xl p-3 sm:p-3.5 shadow-2xs">
+                  <Lightbulb className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+                  <span className="leading-relaxed">{item.eyeOpener}</span>
+                </div>
+              )}
             </div>
 
             {/* Options Grid: 3 modern cards on tablet/desktop, stacked on mobile */}

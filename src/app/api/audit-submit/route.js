@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
 import Audit from "@/lib/models/Audit";
-import { calculateAuditAnalysis } from "@/utils/auditScorer";
+import { generateOpenAIReport } from "@/lib/openaiService";
 
 export async function POST(request) {
   try {
@@ -39,11 +39,11 @@ export async function POST(request) {
       );
     }
 
-    // Recalculate analysis on the server for consistency and security
-    const serverAnalysis = calculateAuditAnalysis(
-      answers || {},
-      formData
-    );
+    // Generate personalized AI Diagnostic Report using OpenAI
+    const reportAnalysis = await generateOpenAIReport({
+      answers: answers || {},
+      formData,
+    });
 
     const leadId = `lead_${Date.now()}_${Math.random()
       .toString(36)
@@ -52,7 +52,7 @@ export async function POST(request) {
     // Connect to MongoDB Atlas
     await connectDB();
 
-    // Save the complete audit submission
+    // Save the complete audit submission with AI report to MongoDB
     const savedAudit = await Audit.create({
       leadId,
       fullName: formData.fullName.trim(),
@@ -63,21 +63,21 @@ export async function POST(request) {
 
       answers: answers || {},
       formData,
-      analysis: serverAnalysis,
+      analysis: reportAnalysis,
 
-      score: serverAnalysis.totalScore,
-      riskLevel: serverAnalysis.riskLevel,
-      statusLabel: serverAnalysis.statusLabel,
+      score: reportAnalysis.totalScore,
+      riskLevel: reportAnalysis.riskLevel,
+      statusLabel: reportAnalysis.statusLabel,
       answersCount: Object.keys(answers || {}).length,
     });
 
-    // Respond after MongoDB confirms the save
+    // Respond after MongoDB confirms the save with the generated AI report
     return NextResponse.json(
       {
         success: true,
-        message: "Audit successfully saved to MongoDB",
+        message: "Audit successfully generated with OpenAI and saved to MongoDB",
         leadId: savedAudit.leadId,
-        analysis: serverAnalysis,
+        analysis: reportAnalysis,
       },
       { status: 200 }
     );

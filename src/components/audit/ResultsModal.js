@@ -41,27 +41,44 @@ export default function ResultsModal({
           <button
             type="button"
             onClick={onClose}
-            className="absolute top-4 right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+            className="absolute top-4 right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
             aria-label="Close modal"
           >
             <X className="w-5 h-5" />
           </button>
 
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 text-blue-200 text-xs font-semibold mb-3 border border-blue-400/30">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Audit Diagnostic Report Generated</span>
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/30 text-blue-100 text-xs font-semibold mb-3 border border-blue-400/40 shadow-xs">
+            <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-pulse" />
+            <span>{analysis.isAiGenerated ? ' Shakktii AI Real Estate Growth Diagnostic' : 'Lead Leakage Diagnostic Generated'}</span>
           </div>
 
-          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white mb-2">
-            Lead Leakage Assessment for {formData.firmName || 'Your Firm'}
+          <h2 className="text-xl sm:text-3xl font-bold tracking-tight text-white mb-2 leading-tight">
+            {analysis.summaryHeadline || `Lead Leakage Assessment for ${formData.firmName || 'Your Firm'}`}
           </h2>
           <p className="text-xs sm:text-sm text-blue-100">
-            Target Focus Area: <span className="font-semibold text-white">{formData.microMarket || 'Local Micro-Market'}</span> · Report delivered to WhatsApp (+91 {formData.whatsappNumber})
+            Target Focus Area: <span className="font-semibold text-white">{formData.microMarket || 'Local Micro-Market'}</span> · Report delivered for <span className="font-semibold text-white">{formData.fullName || 'Broker'}</span>
           </p>
         </div>
 
         {/* Modal Content */}
         <div className="p-6 sm:p-8 space-y-6 max-h-[75vh] overflow-y-auto">
+
+          {/* AI Executive Strategy Takeaway */}
+          {analysis.aiExecutiveAdvice && (
+            <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-blue-50 via-indigo-50 to-blue-50 border border-blue-200/80 text-blue-950 flex items-start gap-3.5 shadow-2xs">
+              <div className="w-9 h-9 rounded-xl bg-[#0B2B68] text-[#E7C579] flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
+                <Sparkles className="w-5 h-5" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <span className="text-xs font-extrabold uppercase tracking-wider text-[#0B2B68] block mb-1">
+                  AI Strategic Takeaway for {formData.firmName || 'Your Agency'}
+                </span>
+                <p className="text-xs sm:text-sm font-medium leading-relaxed text-slate-800">
+                  {analysis.aiExecutiveAdvice}
+                </p>
+              </div>
+            </div>
+          )}
 
           {/* Score & Risk Summary Card */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -79,7 +96,7 @@ export default function ResultsModal({
               <div>
                 <span className="text-2xl sm:text-3xl font-extrabold capitalize">{analysis.statusLabel || `${analysis.riskLevel} Risk`}</span>
                 <p className="text-xs mt-1 font-medium opacity-90">
-                  {riskPercentage}% estimated lead leakage vulnerability across your channels.
+                  Score {analysis.totalScore}/18 ({riskPercentage}% risk vulnerability)
                 </p>
               </div>
             </div>
@@ -92,15 +109,22 @@ export default function ResultsModal({
               </div>
               <div>
                 <span className="text-2xl sm:text-3xl font-extrabold text-[#0B2B68]">
-                  ₹12 Lakhs - ₹35 Lakhs / yr
+                  {analysis.estimatedLeakage || '₹12 Lakhs - ₹35 Lakhs / yr'}
                 </span>
                 <p className="text-xs text-slate-600 mt-1">
-                  Estimated annual brokerage lost to competitor brokers intercepting diverted buyers.
+                  Estimated annual brokerage lost to competing brokers intercepting shared portal leads.
                 </p>
               </div>
             </div>
 
           </div>
+
+          {/* Assessment Overview Narrative */}
+          {analysis.summaryText && (
+            <div className="p-4 sm:p-5 rounded-2xl bg-stone-50/80 border border-stone-200 text-slate-700 text-xs sm:text-sm leading-relaxed">
+              <p>{analysis.summaryText}</p>
+            </div>
+          )}
 
           {/* Key Vulnerability Findings */}
           <div>
@@ -135,16 +159,23 @@ export default function ResultsModal({
               <Sparkles className="w-4 h-4 text-[#1E60E8]" />
               Recommended 3-Step Strategy
             </h4>
-            <ul className="text-xs sm:text-sm space-y-2.5 mt-3 text-slate-700">
+            <ul className="text-xs sm:text-sm space-y-3 mt-3 text-slate-700">
               {analysis.recommendations && analysis.recommendations.length > 0 ? (
                 analysis.recommendations.slice(0, 3).map((rec, idx) => (
-                  <li key={idx} className="flex items-start gap-2">
+                  <li key={idx} className="flex items-start gap-2.5">
                     <span className="w-5 h-5 rounded-full bg-[#1E60E8] text-white flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">
                       {idx + 1}
                     </span>
-                    <div>
-                      <strong>{rec.title}: </strong>
-                      <span>{rec.description}</span>
+                    <div className="flex-1">
+                      <div>
+                        <strong>{rec.title}: </strong>
+                        <span>{rec.description}</span>
+                      </div>
+                      {rec.impact && (
+                        <div className="mt-1 text-[11px] font-semibold text-[#1E60E8]">
+                          ⚡ Impact: {rec.impact}
+                        </div>
+                      )}
                     </div>
                   </li>
                 ))
@@ -190,9 +221,9 @@ export default function ResultsModal({
               )}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[#1E60E8] hover:bg-[#1550c7] text-white text-xs sm:text-sm font-bold shadow-md hover:shadow-lg transition-all"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl bg-[#25D366] hover:bg-[#20ba5a] text-white text-xs sm:text-sm font-bold shadow-lg transition-all animate-button-blink cursor-pointer"
             >
-              <PhoneCall className="w-4 h-4" />
+              <PhoneCall className="w-4 h-4 animate-bounce" />
               <span>Book Strategy Call on WhatsApp</span>
             </a>
           </div>
