@@ -80,11 +80,15 @@ export default function AuditContainer({
 
       setAnalysis(finalAnalysis);
       setShowResultsModal(true);
+      // Clear all selected question options after report generation
+      setSelectedAnswers({});
     } catch (err) {
       console.error('Audit submit error:', err);
       const fallbackAnalysis = calculateAuditAnalysis(selectedAnswers, submittedFormData);
       setAnalysis(fallbackAnalysis);
       setShowResultsModal(true);
+      // Clear all selected question options after report generation
+      setSelectedAnswers({});
     } finally {
       setIsSubmitting(false);
     }
