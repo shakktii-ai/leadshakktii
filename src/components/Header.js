@@ -120,7 +120,7 @@ export default function Header({ onStartAudit }) {
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
         <div className="md:hidden bg-white border-b border-slate-200 px-4 pt-4 pb-8 space-y-4 shadow-lg animate-in slide-in-from-top-2 duration-200">
-          <div className="flex flex-col space-y-2">
+          {/* <div className="flex flex-col space-y-2">
             <button
               type="button"
               onClick={() => scrollToSection('solutions-section')}
@@ -149,7 +149,7 @@ export default function Header({ onStartAudit }) {
             >
               Contact
             </button>
-          </div>
+          </div> */}
 
           <div className="pt-4 border-t border-slate-100">
             <button
