@@ -49,12 +49,19 @@ export async function POST(request) {
       .toString(36)
       .substring(2, 7)}`;
 
+    // Generate a clean, branded Unique Report ID (e.g., RPT-M9X2-K7P)
+    const reportId = `RPT-${Date.now().toString(36).toUpperCase()}-${Math.random()
+      .toString(36)
+      .substring(2, 6)
+      .toUpperCase()}`;
+
     // Connect to MongoDB Atlas
     await connectDB();
 
     // Save the complete audit submission with AI report to MongoDB
     const savedAudit = await Audit.create({
       leadId,
+      reportId,
       fullName: formData.fullName.trim(),
       firmName: formData.firmName.trim(),
       microMarket: formData.microMarket?.trim() || "",
@@ -71,12 +78,14 @@ export async function POST(request) {
       answersCount: Object.keys(answers || {}).length,
     });
 
-    // Respond after MongoDB confirms the save with the generated AI report
+    // Return the response with unique reportId and reportUrl
     return NextResponse.json(
       {
         success: true,
         message: "Audit successfully generated with OpenAI and saved to MongoDB",
         leadId: savedAudit.leadId,
+        reportId: savedAudit.reportId,
+        reportUrl: `/report/${savedAudit.reportId}`,
         analysis: reportAnalysis,
       },
       { status: 200 }
@@ -90,3 +99,4 @@ export async function POST(request) {
     );
   }
 }
+

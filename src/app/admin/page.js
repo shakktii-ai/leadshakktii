@@ -429,7 +429,7 @@ export default function AdminPage() {
               </span>
               <div className="flex items-baseline gap-1">
                 <span className="text-3xl font-extrabold text-stone-900">{stats.avgScore}</span>
-                <span className="text-xs font-semibold text-stone-400">/18</span>
+                <span className="text-xs font-semibold text-stone-400">/50</span>
               </div>
             </div>
             <div className="w-12 h-12 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold">
@@ -582,7 +582,7 @@ export default function AdminPage() {
                               ) : (
                                 <ShieldCheck className="w-3 h-3" />
                               )}
-                              <span>{lead.score ?? 0}/18</span>
+                              <span>{lead.score ?? 0}/50</span>
                             </span>
                           </div>
                           <div className="text-[11px] text-stone-500 mt-1 capitalize font-medium">
@@ -605,6 +605,16 @@ export default function AdminPage() {
                         {/* Actions */}
                         <td className="py-4 px-5 text-right whitespace-nowrap">
                           <div className="flex items-center justify-end gap-2">
+                            <a
+                              href={`/report/${lead.reportId || lead.leadId}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="p-2 rounded-lg bg-stone-100 hover:bg-emerald-600 hover:text-white text-stone-700 transition-colors cursor-pointer"
+                              title="Open public report page"
+                            >
+                              <ExternalLink className="w-4 h-4" />
+                            </a>
+
                             <button
                               type="button"
                               onClick={() => setSelectedLead(lead)}
@@ -667,12 +677,12 @@ export default function AdminPage() {
                 <X className="w-5 h-5" />
               </button>
 
-              <div className="flex items-center gap-2 mb-2">
+              <div className="flex items-center gap-2 mb-2 flex-wrap">
                 <span className="px-3 py-1 rounded-full bg-brand-accent/20 border border-brand-accent/40 text-brand-accent text-xs font-bold uppercase tracking-wider">
                   Lead Audit Record
                 </span>
                 <span className="text-xs text-brand-accent-light">
-                  ID: {selectedLead.leadId}
+                  ID: {selectedLead.reportId || selectedLead.leadId}
                 </span>
               </div>
 
@@ -703,17 +713,29 @@ export default function AdminPage() {
                   </div>
                 </div>
 
-                <a
-                  href={`https://wa.me/${selectedLead.whatsappNumber.replace(/\D/g, '')}?text=${encodeURIComponent(
-                    `Hi ${selectedLead.fullName}, thank you for completing the Shakktii AI Lead Protection Audit for ${selectedLead.firmName}. We have prepared your diagnostic report.`
-                  )}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition-colors"
-                >
-                  <MessageCircle className="w-4 h-4" />
-                  <span>Chat on WhatsApp</span>
-                </a>
+                <div className="flex items-center gap-2">
+                  <a
+                    href={`/report/${selectedLead.reportId || selectedLead.leadId}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-stone-900 hover:bg-black text-white font-bold text-xs shadow-xs transition-colors"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" />
+                    <span>View Public Report</span>
+                  </a>
+
+                  <a
+                    href={`https://wa.me/${selectedLead.whatsappNumber.replace(/\D/g, '')}?text=${encodeURIComponent(
+                      `Hi ${selectedLead.fullName}, thank you for completing the Shakktii AI Lead Protection Audit for ${selectedLead.firmName}. You can view your complete strategy report at: ${typeof window !== 'undefined' ? window.location.origin : ''}/report/${selectedLead.reportId || selectedLead.leadId}`
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition-colors"
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                    <span>Chat on WhatsApp</span>
+                  </a>
+                </div>
               </div>
 
               {/* Assessment Breakdown */}
@@ -728,7 +750,7 @@ export default function AdminPage() {
                       <span className="text-xs font-semibold text-stone-500 block">Total Risk Score</span>
                       <div className="flex items-baseline gap-1 mt-1">
                         <span className="text-2xl font-extrabold text-stone-900">{selectedLead.score ?? selectedLead.analysis.totalScore}</span>
-                        <span className="text-xs text-stone-400 font-bold">/18 Points</span>
+                        <span className="text-xs text-stone-400 font-bold">/50 Points</span>
                       </div>
                       <span className="text-xs font-bold text-stone-600 mt-1 block capitalize">
                         Status: {selectedLead.statusLabel || selectedLead.analysis.statusLabel}

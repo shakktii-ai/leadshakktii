@@ -24,13 +24,14 @@ FIRM DETAILS:
 - Real Estate Firm: ${formData.firmName || 'Real Estate Firm'}
 - Focus Micro-Market / Area: ${formData.microMarket || 'Local Micro-Market'}
 - Old CRM / Database Leads: ${formData.crmLeadVolume || 'Not specified'}
-- Calculated Risk Score: ${baseAnalysis.totalScore} / 18 (${baseAnalysis.riskLevel.toUpperCase()} RISK)
+- Calculated Risk Score: ${baseAnalysis.totalScore} / 50 (${baseAnalysis.riskLevel.toUpperCase()} RISK)
+- Dynamic Calculated Leakage Baseline: ${baseAnalysis.estimatedLeakage}
 
 QUESTIONS & ANSWERS SUBMITTED:
 ${baseAnalysis.answersSummary
   .map(
     (a, idx) =>
-      `Q${idx + 1} (${a.category}): "${a.question}" -> Chosen Answer: "${a.selectedOptionText}" (Risk points: ${a.riskPoints})`
+      `Q${idx + 1} (${a.category}): "${a.question}" -> Chosen Answer: "${a.selectedOptionText}" (Risk points: ${a.riskPoints}/5)`
   )
   .join("\n")}
 
@@ -38,43 +39,66 @@ Respond ONLY with a valid JSON object formatted as follows (no markdown fences, 
 {
   "summaryHeadline": "A powerful 8-12 word executive diagnostic headline specifically referencing ${formData.firmName || 'their firm'} and ${formData.microMarket || 'their micro-market'}",
   "summaryText": "A 3-4 sentence consultative diagnostic assessment addressing ${formData.firmName || 'their firm'} and ${formData.microMarket || 'their micro-market'}, explaining where their high-intent buyers are currently leaking to competing brokers/portals and how an owned website system eliminates this leakage.",
-  "estimatedLeakage": "Estimated annual brokerage revenue lost (e.g. '₹15 Lakhs - ₹35 Lakhs / yr')",
+  "estimatedLeakage": "${baseAnalysis.estimatedLeakage}",
   "leakageAreas": [
     {
+      "id": "portal-exclusivity",
       "name": "Portal Lead Exclusivity",
       "severity": "${baseAnalysis.leakageAreas[0]?.severity || 'critical'}",
-      "description": "Specific finding based on their Q1 portal answer"
+      "description": "Specific finding based on their Q1 portal answer",
+      "whatItMeans": "${baseAnalysis.leakageAreas[0]?.whatItMeans || ''}",
+      "whyItMatters": "${baseAnalysis.leakageAreas[0]?.whyItMatters || ''}",
+      "businessImpact": "Wastes up to 40% of ad budget on non-exclusive shared contacts",
+      "recommendation": "Deploy a dedicated micro-market property landing platform"
     },
     {
+      "id": "client-diversion",
       "name": "Client Diversion Prevention",
       "severity": "${baseAnalysis.leakageAreas[1]?.severity || 'critical'}",
-      "description": "Specific finding based on their Q2 PDF/brochure sharing answer"
+      "description": "Specific finding based on their Q2 PDF/brochure sharing answer",
+      "whatItMeans": "${baseAnalysis.leakageAreas[1]?.whatItMeans || ''}",
+      "whyItMatters": "${baseAnalysis.leakageAreas[1]?.whyItMatters || ''}",
+      "businessImpact": "Direct loss of warm buyer relationships to rival local agents",
+      "recommendation": "Replace PDF sharing with branded website links"
     },
     {
+      "id": "crm-reactivation",
       "name": "CRM Database Reactivation",
       "severity": "${baseAnalysis.leakageAreas[2]?.severity || 'moderate'}",
-      "description": "Specific finding based on their Q3 database answer regarding ${formData.crmLeadVolume || 'their past leads'}"
+      "description": "Specific finding based on their Q3 database answer regarding ${formData.crmLeadVolume || 'their past leads'}",
+      "whatItMeans": "${baseAnalysis.leakageAreas[2]?.whatItMeans || ''}",
+      "whyItMatters": "${baseAnalysis.leakageAreas[2]?.whyItMatters || ''}",
+      "businessImpact": "Unmonetized historical contacts buying from competing brokers",
+      "recommendation": "Broadcast launch landing pages with real-time intent triggers"
     },
     {
-      "name": "Mobile Property UX",
+      "id": "mobile-ux",
+      "name": "Mobile Property UX & Speed",
       "severity": "${baseAnalysis.leakageAreas[3]?.severity || 'moderate'}",
-      "description": "Specific finding based on their Q7 mobile property experience answer"
+      "description": "Specific finding based on their Q7 mobile property experience answer",
+      "whatItMeans": "${baseAnalysis.leakageAreas[3]?.whatItMeans || ''}",
+      "whyItMatters": "${baseAnalysis.leakageAreas[3]?.whyItMatters || ''}",
+      "businessImpact": "High mobile drop-off between inquiry and physical site visits",
+      "recommendation": "Adopt responsive mobile-first interactive property pages"
     }
   ],
   "recommendations": [
     {
+      "id": "rec-1",
       "title": "Step 1 Title specifically for ${formData.microMarket || 'their market'}",
       "description": "Actionable strategic recommendation",
       "impact": "Measurable business impact (e.g. Stops 4-to-1 broker lead sharing & reduces CAC by 60%)",
       "urgency": "Immediate"
     },
     {
+      "id": "rec-2",
       "title": "Step 2 Title",
       "description": "Actionable strategic recommendation",
       "impact": "Measurable business impact",
       "urgency": "Immediate"
     },
     {
+      "id": "rec-3",
       "title": "Step 3 Title for their database or SEO",
       "description": "Actionable strategic recommendation",
       "impact": "Measurable business impact",
@@ -125,20 +149,43 @@ Respond ONLY with a valid JSON object formatted as follows (no markdown fences, 
 
     const aiResult = JSON.parse(content);
 
-    // Merge AI generated fields with verified deterministic score metrics
+    // Merge AI generated fields with verified deterministic score metrics and expandable details
+    const mergedLeakageAreas = baseAnalysis.leakageAreas.map((baseArea, i) => {
+      const aiArea = aiResult.leakageAreas?.[i];
+      if (!aiArea) return baseArea;
+      return {
+        ...baseArea,
+        name: aiArea.name || baseArea.name,
+        severity: aiArea.severity || baseArea.severity,
+        description: aiArea.description || baseArea.description,
+        whatItMeans: aiArea.whatItMeans || baseArea.whatItMeans,
+        whyItMatters: aiArea.whyItMatters || baseArea.whyItMatters,
+        businessImpact: aiArea.businessImpact || baseArea.businessImpact,
+        recommendation: aiArea.recommendation || baseArea.recommendation,
+      };
+    });
+
+    const mergedRecommendations = baseAnalysis.recommendations.map((baseRec, i) => {
+      const aiRec = aiResult.recommendations?.[i];
+      if (!aiRec) return baseRec;
+      return {
+        ...baseRec,
+        title: aiRec.title || baseRec.title,
+        description: aiRec.description || baseRec.description,
+        impact: aiRec.impact || baseRec.impact,
+        urgency: aiRec.urgency || baseRec.urgency,
+      };
+    });
+
     return {
       ...baseAnalysis,
       isAiGenerated: true,
       summaryHeadline: aiResult.summaryHeadline || baseAnalysis.summaryHeadline,
       summaryText: aiResult.summaryText || baseAnalysis.summaryText,
-      estimatedLeakage: aiResult.estimatedLeakage || "₹12 Lakhs - ₹35 Lakhs / yr",
+      estimatedLeakage: aiResult.estimatedLeakage || baseAnalysis.estimatedLeakage,
       aiExecutiveAdvice: aiResult.aiExecutiveAdvice || "",
-      leakageAreas: Array.isArray(aiResult.leakageAreas) && aiResult.leakageAreas.length > 0
-        ? aiResult.leakageAreas
-        : baseAnalysis.leakageAreas,
-      recommendations: Array.isArray(aiResult.recommendations) && aiResult.recommendations.length > 0
-        ? aiResult.recommendations
-        : baseAnalysis.recommendations,
+      leakageAreas: mergedLeakageAreas,
+      recommendations: mergedRecommendations,
     };
   } catch (error) {
     console.error("OpenAI report generation error, falling back to base analysis:", error);

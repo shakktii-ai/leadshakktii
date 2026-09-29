@@ -8,12 +8,12 @@ export const AUDIT_QUESTIONS = [
       {
         id: 'q1-o1',
         text: 'Portals sell the exact same buyer number to 4 to 5 other channel partners at the same time.',
-        riskPoints: 2,
+        riskPoints: 5,
       },
       {
         id: 'q1-o2',
         text: 'Lead prices keep rising every month, but buyer quality keeps dropping.',
-        riskPoints: 1,
+        riskPoints: 3,
       },
       {
         id: 'q1-o3',
@@ -35,12 +35,12 @@ export const AUDIT_QUESTIONS = [
       {
         id: 'q2-o1',
         text: 'We send builder brochures or PDFs on WhatsApp. (Then the client searches Google and calls another advisor).',
-        riskPoints: 2,
+        riskPoints: 5,
       },
       {
         id: 'q2-o2',
         text: 'We tell them project names verbally over the phone.',
-        riskPoints: 1,
+        riskPoints: 3,
       },
       {
         id: 'q2-o3',
@@ -62,12 +62,12 @@ export const AUDIT_QUESTIONS = [
       {
         id: 'q3-o1',
         text: 'We spend heavy money again to buy fresh portal packages or run new Meta ads.',
-        riskPoints: 2,
+        riskPoints: 5,
       },
       {
         id: 'q3-o2',
         text: 'We send plain text or images on WhatsApp (low response, many numbers report spam).',
-        riskPoints: 1,
+        riskPoints: 3,
       },
       {
         id: 'q3-o3',
@@ -89,12 +89,12 @@ export const AUDIT_QUESTIONS = [
       {
         id: 'q4-o1',
         text: 'Big national portals take all the traffic, our firm is nowhere to be seen.',
-        riskPoints: 2,
+        riskPoints: 5,
       },
       {
         id: 'q4-o2',
         text: 'Only builders running paid ads.',
-        riskPoints: 1,
+        riskPoints: 2,
       },
       {
         id: 'q4-o3',
@@ -116,12 +116,12 @@ export const AUDIT_QUESTIONS = [
       {
         id: 'q5-o1',
         text: 'A simple instant lead form (lots of fake numbers, students, and invalid inquiries).',
-        riskPoints: 2,
+        riskPoints: 5,
       },
       {
         id: 'q5-o2',
         text: 'Directly to WhatsApp (costs stay high and tracking who visited is difficult).',
-        riskPoints: 1,
+        riskPoints: 3,
       },
       {
         id: 'q5-o3',
@@ -143,12 +143,12 @@ export const AUDIT_QUESTIONS = [
       {
         id: 'q6-o1',
         text: 'No, buyers treat us just like any other normal broker who calls them.',
-        riskPoints: 2,
+        riskPoints: 5,
       },
       {
         id: 'q6-o2',
         text: 'Somewhat, but only if they meet us face-to-face.',
-        riskPoints: 1,
+        riskPoints: 2,
       },
       {
         id: 'q6-o3',
@@ -170,12 +170,12 @@ export const AUDIT_QUESTIONS = [
       {
         id: 'q7-o1',
         text: 'No, they have to open heavy PDF files that fill up their phone memory.',
-        riskPoints: 2,
+        riskPoints: 5,
       },
       {
         id: 'q7-o2',
-        text: 'No, we send multiple WhatsApp images back and forth',
-        riskPoints: 1,
+        text: 'No, we send multiple WhatsApp images back and forth.',
+        riskPoints: 3,
       },
       {
         id: 'q7-o3',
@@ -197,12 +197,12 @@ export const AUDIT_QUESTIONS = [
       {
         id: 'q8-o1',
         text: 'Fresh inquiries immediately drop to absolute zero.',
-        riskPoints: 2,
+        riskPoints: 5,
       },
       {
         id: 'q8-o2',
         text: 'We only get 1 or 2 occasional referrals from friends.',
-        riskPoints: 1,
+        riskPoints: 3,
       },
       {
         id: 'q8-o3',
@@ -224,12 +224,12 @@ export const AUDIT_QUESTIONS = [
       {
         id: 'q9-o1',
         text: 'We just show our past booking track record on paper.',
-        riskPoints: 2,
+        riskPoints: 5,
       },
       {
         id: 'q9-o2',
         text: 'We struggle to show them how we market differently from other agents.',
-        riskPoints: 1,
+        riskPoints: 3,
       },
       {
         id: 'q9-o3',
@@ -251,17 +251,17 @@ export const AUDIT_QUESTIONS = [
       {
         id: 'q10-o1',
         text: 'Cut Lead Acquisition Costs: Stop paying monthly portal rents for non-exclusive leads and generate direct inquiries at half the cost.',
-        riskPoints: 0,
+        riskPoints: 5,
       },
       {
         id: 'q10-o2',
         text: 'Zero Buyer Leakage: Give clients a reason to stay glued to our firm instead of browsing Google and closing with another local agent.',
-        riskPoints: 0,
+        riskPoints: 3,
       },
       {
         id: 'q10-o3',
         text: 'Extract Bookings from Dead Data: Turn our silent CRM list of 5,000+ past buyers into fresh site visits every time a new project launches.',
-        riskPoints: 0,
+        riskPoints: 2,
       },
     ],
     eyeOpener: 'Customizing your digital infrastructure around your primary goal cuts customer acquisition cost by up to 60%.',
@@ -278,3 +278,4 @@ export const CRM_LEAD_OPTIONS = [
   '5,000 to 10,000+ leads',
   '10,000+ leads',
 ];
+

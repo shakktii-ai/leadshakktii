@@ -25,6 +25,7 @@ export default function AuditContainer({
   const [selectedAnswers, setSelectedAnswers] = useState({});
   const [formData, setFormData] = useState(INITIAL_FORM_STATE);
   const [analysis, setAnalysis] = useState(null);
+  const [reportId, setReportId] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showResultsModal, setShowResultsModal] = useState(false);
 
@@ -53,6 +54,7 @@ export default function AuditContainer({
     try {
       // Calculate initial client analysis as baseline/fallback
       let finalAnalysis = calculateAuditAnalysis(selectedAnswers, submittedFormData);
+      let assignedReportId = `RPT-${Date.now().toString(36).toUpperCase()}`;
 
       // Submit to backend API which triggers OpenAI report generation and MongoDB save
       try {
@@ -70,6 +72,9 @@ export default function AuditContainer({
           console.error('API submission returned error:', data.error);
         } else {
           console.log('Lead audit saved successfully with ID:', data.leadId);
+          if (data.reportId || data.leadId) {
+            assignedReportId = data.reportId || data.leadId;
+          }
           if (data.analysis) {
             finalAnalysis = data.analysis;
           }
@@ -78,6 +83,7 @@ export default function AuditContainer({
         console.warn('API post error, continuing with fallback analysis:', e);
       }
 
+      setReportId(assignedReportId);
       setAnalysis(finalAnalysis);
       setShowResultsModal(true);
       // Clear all selected question options after report generation
@@ -193,6 +199,7 @@ export default function AuditContainer({
           onClose={() => setShowResultsModal(false)}
           analysis={analysis}
           formData={formData}
+          reportId={reportId}
           onRetake={handleRetake}
         />
       )}

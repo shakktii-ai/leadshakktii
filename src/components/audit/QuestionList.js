@@ -80,8 +80,8 @@ export default function QuestionList({ selectedAnswers = {}, onSelectOption }) {
                 )}
               </div>
 
-              {/* Full Width Question Text */}
-              <h3 className="text-base sm:text-xl font-bold text-brand-dark leading-snug w-full">
+              {/* Full Width Question Text (+1-2px font size, clear leading) */}
+              <h3 className="text-[17px] sm:text-[22px] font-extrabold text-brand-dark leading-snug w-full">
                 {item.question}
               </h3>
 
@@ -94,53 +94,52 @@ export default function QuestionList({ selectedAnswers = {}, onSelectOption }) {
               )}
             </div>
 
-            {/* Options Grid: 3 modern cards on tablet/desktop, stacked on mobile */}
-            <div className="p-4 sm:p-5 bg-stone-50/40 grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
+            {/* Options List: A/B/C Labels Outside, Clean Compact Answer Boxes */}
+            <div className="p-4 sm:p-5 bg-stone-50/50 space-y-2.5 sm:space-y-3">
               {item.options.map((option, idx) => {
                 const isSelected = selectedOpt === option.id;
                 const label = OPTION_LABELS[idx] ?? String(idx + 1);
 
                 return (
-                  <button
-                    key={option.id}
-                    type="button"
-                    onClick={() => onSelectOption(item.id, option.id)}
-                    className={`w-full text-left rounded-xl p-4 sm:p-5 flex flex-col justify-between transition-all duration-200 active:scale-[0.98] cursor-pointer group min-h-[110px] ${
-                      isSelected
-                        ? 'bg-white border-2 border-brand-primary ring-2 ring-brand-primary/20 shadow-md'
-                        : 'bg-white border-2 border-stone-200/90 hover:border-brand-primary/40 hover:bg-stone-50/90 shadow-2xs hover:shadow-xs'
-                    }`}
-                  >
-                    {/* Top Row: Letter badge & Selection check */}
-                    <div className="flex items-center justify-between mb-3 w-full">
-                      <div
-                        className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold transition-all ${
-                          isSelected
-                            ? 'bg-brand-primary text-white shadow-sm shadow-brand-primary/30'
-                            : 'bg-stone-100 text-stone-600 group-hover:bg-brand-primary/10 group-hover:text-brand-primary'
-                        }`}
-                      >
-                        {isSelected ? <Check className="w-4 h-4" /> : label}
-                      </div>
-
-                      {isSelected && (
-                        <span className="text-[11px] font-bold uppercase tracking-wider text-brand-primary bg-brand-primary/10 px-2 py-0.5 rounded">
-                          Active
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Option Text */}
-                    <p
-                      className={`text-sm sm:text-[15px] leading-relaxed flex-1 ${
+                  <div key={option.id} className="flex items-center gap-2.5 sm:gap-3.5 w-full group">
+                    {/* A/B/C Label Badge - Positioned OUTSIDE the answer box with larger font size */}
+                    <div
+                      className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center font-extrabold text-sm sm:text-base shrink-0 transition-all select-none ${
                         isSelected
-                          ? 'text-brand-dark font-bold'
-                          : 'text-stone-700 font-medium group-hover:text-stone-900'
+                          ? 'bg-brand-primary text-white shadow-sm shadow-brand-primary/30 ring-2 ring-brand-primary/20 scale-105'
+                          : 'bg-stone-200/80 text-stone-700 group-hover:bg-brand-primary/10 group-hover:text-brand-primary'
                       }`}
                     >
-                      {option.text}
-                    </p>
-                  </button>
+                      {label}
+                    </div>
+
+                    {/* Compact, Clean Answer Box */}
+                    <button
+                      type="button"
+                      onClick={() => onSelectOption(item.id, option.id)}
+                      className={`flex-1 text-left rounded-xl px-4 py-3 sm:px-4.5 sm:py-3.5 flex items-center justify-between gap-3 border transition-all duration-200 active:scale-[0.99] cursor-pointer shadow-2xs ${
+                        isSelected
+                          ? 'bg-white border-2 border-brand-primary ring-2 ring-brand-primary/15 shadow-sm'
+                          : 'bg-white border border-stone-200 hover:border-brand-primary/40 hover:bg-stone-50/90 hover:shadow-xs'
+                      }`}
+                    >
+                      <p
+                        className={`text-xs sm:text-sm leading-relaxed flex-1 ${
+                          isSelected
+                            ? 'text-brand-dark font-bold'
+                            : 'text-stone-700 font-medium group-hover:text-stone-900'
+                        }`}
+                      >
+                        {option.text}
+                      </p>
+
+                      {isSelected && (
+                        <span className="w-5 h-5 rounded-full bg-brand-primary text-white flex items-center justify-center shrink-0 shadow-xs">
+                          <Check className="w-3 h-3 stroke-[3]" />
+                        </span>
+                      )}
+                    </button>
+                  </div>
                 );
               })}
             </div>

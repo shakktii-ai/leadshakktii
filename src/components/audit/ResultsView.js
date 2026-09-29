@@ -158,7 +158,7 @@ export default function ResultsView({
           <div className="mt-8 pt-6 border-t border-slate-200">
             <div className="flex justify-between text-xs font-semibold text-slate-500 mb-2">
               <span>0 (Optimal Protection)</span>
-              <span>18 (Maximum Risk)</span>
+              <span>{analysis.maxScore || 50} (Maximum Risk)</span>
             </div>
             <div className="w-full bg-slate-200 h-3 rounded-full overflow-hidden relative">
               <div
@@ -167,9 +167,9 @@ export default function ResultsView({
               />
             </div>
             <div className="grid grid-cols-3 text-center text-[11px] text-slate-500 mt-2">
-              <div className="text-left font-medium text-emerald-700">0–6: Foundations In Place</div>
-              <div className="text-center font-medium text-amber-700">7–12: Opportunities to Improve</div>
-              <div className="text-right font-medium text-rose-700">13–18: Areas Need Attention</div>
+              <div className="text-left font-medium text-emerald-700">0–16: Low Risk</div>
+              <div className="text-center font-medium text-amber-700">17–33: Moderate Risk</div>
+              <div className="text-right font-medium text-rose-700">34–50: High Risk</div>
             </div>
           </div>
         </div>
@@ -330,7 +330,7 @@ export default function ResultsView({
             <div className="space-y-3">
               <a
                 href={`https://wa.me/918446078867?text=${encodeURIComponent(
-                  `Hi Shakktii AI, I just completed the Lead Protection Audit for ${formData.firmName} (${formData.microMarket}). My score is ${analysis.totalScore}/18. I would like to schedule our strategy call.`
+                  `Hi Shakktii AI, I just completed the Lead Protection Audit for ${formData.firmName} (${formData.microMarket}). My score is ${analysis.totalScore}/${analysis.maxScore || 50}. I would like to schedule our strategy call.`
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"

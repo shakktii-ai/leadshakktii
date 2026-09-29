@@ -6,11 +6,18 @@ const AuditSchema = new Schema(
       type: String,
       required: true,
       unique: true,
+      index: true,
+    },
+    reportId: {
+      type: String,
+      unique: true,
+      sparse: true,
+      index: true,
     },
     fullName: { type: String, required: true },
     firmName: { type: String, required: true },
     microMarket: { type: String, default: "" },
-    whatsappNumber: { type: String, required: true },
+    whatsappNumber: { type: String, required: true, index: true },
     crmLeadVolume: { type: Schema.Types.Mixed },
 
     // Store all submitted answers
@@ -39,6 +46,10 @@ const AuditSchema = new Schema(
   { timestamps: true }
 );
 
+// Fallback index to ensure fast search by phone and reportId
+AuditSchema.index({ whatsappNumber: 1, createdAt: -1 });
+
 const Audit = mongoose.models.Audit || mongoose.model("Audit", AuditSchema);
 
 export default Audit;
+
