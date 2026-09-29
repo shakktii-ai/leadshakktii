@@ -27,6 +27,7 @@ export default function AuditContainer({
 }) {
   const [selectedAnswers, setSelectedAnswers] = useState({});
   const [formData, setFormData] = useState(INITIAL_FORM_STATE);
+  const [submittedLeadData, setSubmittedLeadData] = useState(null);
   const [analysis, setAnalysis] = useState(null);
   const [reportId, setReportId] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -57,6 +58,7 @@ export default function AuditContainer({
   const handleLeadSubmit = async (submittedFormData) => {
     const combinedData = { ...formData, ...submittedFormData };
     setFormData(combinedData);
+    setSubmittedLeadData(combinedData);
     setIsSubmitting(true);
 
     try {
@@ -216,7 +218,7 @@ export default function AuditContainer({
           isOpen={showResultsModal}
           onClose={() => setShowResultsModal(false)}
           analysis={analysis}
-          formData={formData}
+          formData={submittedLeadData || formData}
           reportId={reportId}
           onRetake={handleRetake}
         />

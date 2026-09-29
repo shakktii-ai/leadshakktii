@@ -127,8 +127,6 @@ export default function LeadCaptureSidebar({
     if (Object.keys(validationErrors).length === 0) {
       const submittedData = { ...formData };
       await onSubmit(submittedData);
-      // Clear all fields on submit
-      setFormData(INITIAL_FORM_STATE);
       setTouched({});
       setErrors({});
     }

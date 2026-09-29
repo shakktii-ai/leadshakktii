@@ -118,7 +118,6 @@ export default function LeadCaptureForm({
     if (Object.keys(validationErrors).length === 0) {
       const submittedData = { ...formData };
       await onSubmit(submittedData);
-      setFormData(INITIAL_FORM_STATE);
       setTouched({});
       setErrors({});
     }
