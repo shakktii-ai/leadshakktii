@@ -19,6 +19,9 @@ const AuditSchema = new Schema(
     microMarket: { type: String, default: "" },
     whatsappNumber: { type: String, required: true, index: true },
     crmLeadVolume: { type: Schema.Types.Mixed },
+    monthlyPortalSpend: { type: String, default: "" },
+    monthlyBuyerLeads: { type: String, default: "" },
+    brokeragePerBooking: { type: String, default: "" },
 
     // Store all submitted answers
     answers: {

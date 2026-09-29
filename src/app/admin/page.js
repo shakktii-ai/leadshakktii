@@ -174,7 +174,11 @@ export default function AdminPage() {
       'Focus Micro-Market',
       'WhatsApp Number',
       'CRM Old Leads Volume',
-      'Risk Score (out of 18)',
+      'Monthly Portal Spend (₹)',
+      'Buyer Leads / Month',
+      'Avg Brokerage / Booking (₹)',
+      'Cost Per Lead (₹)',
+      'Risk Score (out of 50)',
       'Risk Status',
       'Submitted Date',
     ];
@@ -186,6 +190,10 @@ export default function AdminPage() {
       `"${(l.microMarket || '').replace(/"/g, '""')}"`,
       `"${l.whatsappNumber || ''}"`,
       `"${l.crmLeadVolume || ''}"`,
+      `"${l.monthlyPortalSpend || l.formData?.monthlyPortalSpend || ''}"`,
+      `"${l.monthlyBuyerLeads || l.formData?.monthlyBuyerLeads || ''}"`,
+      `"${l.brokeragePerBooking || l.formData?.brokeragePerBooking || ''}"`,
+      `"${l.analysis?.leakageMetrics?.costPerLeadFormatted || ''}"`,
       l.score ?? '',
       `"${l.statusLabel || l.riskLevel || ''}"`,
       `"${l.createdAt ? new Date(l.createdAt).toLocaleString('en-IN') : ''}"`,
@@ -504,6 +512,7 @@ export default function AdminPage() {
                   <th className="py-4 px-5">Agent &amp; Firm</th>
                   <th className="py-4 px-5">Micro-Market</th>
                   <th className="py-4 px-5">WhatsApp Contact</th>
+                  <th className="py-4 px-5">Portal Economics</th>
                   <th className="py-4 px-5">Old Leads</th>
                   <th className="py-4 px-5">Score &amp; Status</th>
                   <th className="py-4 px-5">Submitted At</th>
@@ -557,6 +566,23 @@ export default function AdminPage() {
                             >
                               <MessageCircle className="w-4 h-4" />
                             </a>
+                          </div>
+                        </td>
+
+                        {/* Portal Economics */}
+                        <td className="py-4 px-5">
+                          <div className="font-semibold text-stone-900 text-xs">
+                            {lead.monthlyPortalSpend || lead.formData?.monthlyPortalSpend
+                              ? `₹${lead.monthlyPortalSpend || lead.formData?.monthlyPortalSpend}/mo`
+                              : '—'}
+                          </div>
+                          <div className="text-[11px] text-stone-500 font-medium mt-0.5">
+                            {lead.monthlyBuyerLeads || lead.formData?.monthlyBuyerLeads
+                              ? `${lead.monthlyBuyerLeads || lead.formData?.monthlyBuyerLeads} leads`
+                              : ''}
+                            {lead.brokeragePerBooking || lead.formData?.brokeragePerBooking
+                              ? ` · ₹${lead.brokeragePerBooking || lead.formData?.brokeragePerBooking}/deal`
+                              : ''}
                           </div>
                         </td>
 
@@ -765,6 +791,45 @@ export default function AdminPage() {
                       <span className="text-xs text-stone-500 mt-1 block">
                         Dormant database re-engagement potential
                       </span>
+                    </div>
+                  </div>
+
+                  {/* Operational Economics Cards */}
+                  <div className="p-4 rounded-2xl bg-stone-50 border border-stone-200">
+                    <span className="text-xs font-bold uppercase tracking-wider text-stone-500 block mb-2.5">
+                      Portal &amp; Commission Economics
+                    </span>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                      <div className="p-3 rounded-xl bg-white border border-stone-200">
+                        <span className="text-[10px] uppercase font-bold text-stone-400 block">Monthly Spend</span>
+                        <span className="text-sm font-bold text-stone-900 block mt-0.5">
+                          {selectedLead.monthlyPortalSpend || selectedLead.formData?.monthlyPortalSpend
+                            ? `₹${selectedLead.monthlyPortalSpend || selectedLead.formData?.monthlyPortalSpend}`
+                            : '—'}
+                        </span>
+                      </div>
+                      <div className="p-3 rounded-xl bg-white border border-stone-200">
+                        <span className="text-[10px] uppercase font-bold text-stone-400 block">Buyer Leads / Mo</span>
+                        <span className="text-sm font-bold text-stone-900 block mt-0.5">
+                          {selectedLead.monthlyBuyerLeads || selectedLead.formData?.monthlyBuyerLeads
+                            ? `${selectedLead.monthlyBuyerLeads || selectedLead.formData?.monthlyBuyerLeads} leads`
+                            : '—'}
+                        </span>
+                      </div>
+                      <div className="p-3 rounded-xl bg-white border border-stone-200">
+                        <span className="text-[10px] uppercase font-bold text-stone-400 block">Cost / Lead (CPL)</span>
+                        <span className="text-sm font-bold text-amber-700 block mt-0.5">
+                          {selectedLead.analysis?.leakageMetrics?.costPerLeadFormatted || '—'}
+                        </span>
+                      </div>
+                      <div className="p-3 rounded-xl bg-white border border-stone-200">
+                        <span className="text-[10px] uppercase font-bold text-stone-400 block">Brokerage / Deal</span>
+                        <span className="text-sm font-bold text-emerald-700 block mt-0.5">
+                          {selectedLead.brokeragePerBooking || selectedLead.formData?.brokeragePerBooking
+                            ? `₹${selectedLead.brokeragePerBooking || selectedLead.formData?.brokeragePerBooking}`
+                            : '—'}
+                        </span>
+                      </div>
                     </div>
                   </div>
 

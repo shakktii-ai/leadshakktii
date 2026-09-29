@@ -15,6 +15,9 @@ const INITIAL_FORM_STATE = {
   microMarket: '',
   whatsappNumber: '',
   crmLeadVolume: '',
+  monthlyPortalSpend: '',
+  monthlyBuyerLeads: '',
+  brokeragePerBooking: '',
   consent: true,
 };
 
@@ -55,6 +58,18 @@ export default function LeadCaptureSidebar({
       newErrors.crmLeadVolume = 'Please select your lead volume range.';
     }
 
+    if (!data.monthlyPortalSpend?.trim()) {
+      newErrors.monthlyPortalSpend = 'Please enter approx. monthly portal spend.';
+    }
+
+    if (!data.monthlyBuyerLeads?.trim()) {
+      newErrors.monthlyBuyerLeads = 'Please enter approx. buyer leads received per month.';
+    }
+
+    if (!data.brokeragePerBooking?.trim()) {
+      newErrors.brokeragePerBooking = 'Please enter average brokerage per booking.';
+    }
+
     if (!data.consent) {
       newErrors.consent = 'Please agree to receive your lead audit report.';
     }
@@ -86,6 +101,9 @@ export default function LeadCaptureSidebar({
       microMarket: true,
       whatsappNumber: true,
       crmLeadVolume: true,
+      monthlyPortalSpend: true,
+      monthlyBuyerLeads: true,
+      brokeragePerBooking: true,
       consent: true,
     };
     setTouched(allTouched);
@@ -314,6 +332,108 @@ export default function LeadCaptureSidebar({
               <p className="text-sm text-red-600 mt-2.5 flex items-center gap-1.5 font-medium">
                 <AlertCircle className="w-4 h-4 shrink-0" />
                 <span>{errors.crmLeadVolume}</span>
+              </p>
+            )}
+          </div>
+
+          {/* 1. Approx. monthly spend on property portals? */}
+          <div>
+            <label htmlFor="monthlyPortalSpend" className="block text-base sm:text-sm font-bold text-brand-dark mb-3">
+              1. Approx. monthly spend on property portals? <span className="text-red-500">*</span>
+            </label>
+            <div className="flex rounded-xl border overflow-hidden focus-within:ring-2 focus-within:ring-brand-primary/30 focus-within:border-brand-primary border-stone-300 min-h-[58px] shadow-sm">
+              <span className="inline-flex items-center px-4.5 bg-stone-100 text-stone-800 font-bold text-base border-r border-stone-300 select-none">
+                ₹
+              </span>
+              <input
+                type="text"
+                inputMode="numeric"
+                id="monthlyPortalSpend"
+                name="monthlyPortalSpend"
+                value={formData.monthlyPortalSpend}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/[^0-9,]/g, '');
+                  handleChange('monthlyPortalSpend', val);
+                }}
+                onBlur={() => handleBlur('monthlyPortalSpend')}
+                placeholder="e.g. 50,000"
+                className={`w-full px-4 py-4 bg-white text-base text-brand-dark placeholder:text-stone-400 focus:outline-none ${
+                  errors.monthlyPortalSpend && touched.monthlyPortalSpend ? 'bg-red-50/20' : ''
+                }`}
+              />
+            </div>
+            {errors.monthlyPortalSpend && touched.monthlyPortalSpend && (
+              <p className="text-sm text-red-600 mt-2.5 flex items-center gap-1.5 font-medium">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                <span>{errors.monthlyPortalSpend}</span>
+              </p>
+            )}
+          </div>
+
+          {/* 2. Approx. buyer leads received per month? */}
+          <div>
+            <label htmlFor="monthlyBuyerLeads" className="block text-base sm:text-sm font-bold text-brand-dark mb-3">
+              2. Approx. buyer leads received per month? <span className="text-red-500">*</span>
+            </label>
+            <div className="flex rounded-xl border overflow-hidden focus-within:ring-2 focus-within:ring-brand-primary/30 focus-within:border-brand-primary border-stone-300 min-h-[58px] shadow-sm">
+              <input
+                type="text"
+                inputMode="numeric"
+                id="monthlyBuyerLeads"
+                name="monthlyBuyerLeads"
+                value={formData.monthlyBuyerLeads}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/[^0-9]/g, '');
+                  handleChange('monthlyBuyerLeads', val);
+                }}
+                onBlur={() => handleBlur('monthlyBuyerLeads')}
+                placeholder="e.g. 60"
+                className={`w-full px-4 py-4 bg-white text-base text-brand-dark placeholder:text-stone-400 focus:outline-none ${
+                  errors.monthlyBuyerLeads && touched.monthlyBuyerLeads ? 'bg-red-50/20' : ''
+                }`}
+              />
+              <span className="inline-flex items-center px-4.5 bg-stone-100 text-stone-700 font-semibold text-sm border-l border-stone-300 select-none">
+                leads
+              </span>
+            </div>
+            {errors.monthlyBuyerLeads && touched.monthlyBuyerLeads && (
+              <p className="text-sm text-red-600 mt-2.5 flex items-center gap-1.5 font-medium">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                <span>{errors.monthlyBuyerLeads}</span>
+              </p>
+            )}
+          </div>
+
+          {/* 3. Average brokerage earned per booking? */}
+          <div>
+            <label htmlFor="brokeragePerBooking" className="block text-base sm:text-sm font-bold text-brand-dark mb-3">
+              3. Average brokerage earned per booking? <span className="text-red-500">*</span>
+            </label>
+            <div className="flex rounded-xl border overflow-hidden focus-within:ring-2 focus-within:ring-brand-primary/30 focus-within:border-brand-primary border-stone-300 min-h-[58px] shadow-sm">
+              <span className="inline-flex items-center px-4.5 bg-stone-100 text-stone-800 font-bold text-base border-r border-stone-300 select-none">
+                ₹
+              </span>
+              <input
+                type="text"
+                inputMode="numeric"
+                id="brokeragePerBooking"
+                name="brokeragePerBooking"
+                value={formData.brokeragePerBooking}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/[^0-9,]/g, '');
+                  handleChange('brokeragePerBooking', val);
+                }}
+                onBlur={() => handleBlur('brokeragePerBooking')}
+                placeholder="e.g. 1,50,000"
+                className={`w-full px-4 py-4 bg-white text-base text-brand-dark placeholder:text-stone-400 focus:outline-none ${
+                  errors.brokeragePerBooking && touched.brokeragePerBooking ? 'bg-red-50/20' : ''
+                }`}
+              />
+            </div>
+            {errors.brokeragePerBooking && touched.brokeragePerBooking && (
+              <p className="text-sm text-red-600 mt-2.5 flex items-center gap-1.5 font-medium">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                <span>{errors.brokeragePerBooking}</span>
               </p>
             )}
           </div>

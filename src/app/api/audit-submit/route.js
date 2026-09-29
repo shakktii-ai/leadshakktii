@@ -67,6 +67,9 @@ export async function POST(request) {
       microMarket: formData.microMarket?.trim() || "",
       whatsappNumber: `+91${cleanedPhone}`,
       crmLeadVolume: formData.crmLeadVolume,
+      monthlyPortalSpend: formData.monthlyPortalSpend?.trim?.() || String(formData.monthlyPortalSpend || ""),
+      monthlyBuyerLeads: formData.monthlyBuyerLeads?.trim?.() || String(formData.monthlyBuyerLeads || ""),
+      brokeragePerBooking: formData.brokeragePerBooking?.trim?.() || String(formData.brokeragePerBooking || ""),
 
       answers: answers || {},
       formData,

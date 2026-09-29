@@ -1,30 +1,25 @@
 import { AUDIT_QUESTIONS } from '@/data/auditQuestions';
 
 /**
- * Calculates dynamic estimated financial leakage based on CRM lead volume, risk score, and channel points.
+ * Calculates dynamic estimated financial leakage based on CRM lead volume, portal spend,
+ * buyer leads per month, brokerage per booking, risk score, and channel points.
  */
 export function calculateEstimatedLeakage(totalScore = 0, formData = {}, answersSummary = []) {
-  // Volume multiplier based on user's past database
-  let baseMin = 6;
-  let baseMax = 14;
+  // Parse numeric values from 3 new inputs
+  const parseNum = (val) => {
+    if (!val) return 0;
+    const cleaned = String(val).replace(/[^0-9.]/g, '');
+    return parseFloat(cleaned) || 0;
+  };
 
-  const volumeStr = String(formData.crmLeadVolume || '').toLowerCase();
-  if (volumeStr.includes('10,000')) {
-    baseMin = 35;
-    baseMax = 80;
-  } else if (volumeStr.includes('5,000')) {
-    baseMin = 22;
-    baseMax = 50;
-  } else if (volumeStr.includes('1,000')) {
-    baseMin = 12;
-    baseMax = 28;
-  } else if (volumeStr.includes('less than') || volumeStr.includes('500')) {
-    baseMin = 5;
-    baseMax = 12;
-  }
+  const portalSpendMonthly = parseNum(formData.monthlyPortalSpend);
+  const buyerLeadsMonthly = parseNum(formData.monthlyBuyerLeads);
+  const brokeragePerBooking = parseNum(formData.brokeragePerBooking);
 
-  // Risk factor based on 50-point score (from 0.2 to 1.3)
-  const scoreFactor = Math.max(0.3, Math.min(1.3, (totalScore / 50) * 1.25));
+  const costPerLead =
+    portalSpendMonthly > 0 && buyerLeadsMonthly > 0
+      ? Math.round(portalSpendMonthly / buyerLeadsMonthly)
+      : null;
 
   // Channel penalties
   const q1 = answersSummary.find((a) => a.questionId === 1)?.riskPoints || 0;
@@ -36,11 +31,56 @@ export function calculateEstimatedLeakage(totalScore = 0, formData = {}, answers
   if (q2 >= 5) penalty += 0.15;
   if (q3 >= 5) penalty += 0.15;
 
-  const calculatedMinLakhs = Math.round(baseMin * scoreFactor * penalty);
-  const calculatedMaxLakhs = Math.round(baseMax * scoreFactor * penalty);
+  const scoreFactor = Math.max(0.3, Math.min(1.3, (totalScore / 50) * 1.25));
 
-  const finalMin = Math.max(3, calculatedMinLakhs);
-  const finalMax = Math.max(finalMin + 5, calculatedMaxLakhs);
+  let finalMin = 0;
+  let finalMax = 0;
+
+  // If user provided concrete monthly portal spend or brokerage numbers, use direct unit economics
+  if (portalSpendMonthly > 0 || brokeragePerBooking > 0) {
+    // 1. Shared Portal Spend Waste (60% to 80% wasted on non-exclusive portal leads)
+    const annualPortalSpend = portalSpendMonthly * 12;
+    const portalWasteMin = annualPortalSpend * (q1 >= 4 ? 0.65 : 0.45);
+    const portalWasteMax = annualPortalSpend * (q1 >= 4 ? 0.85 : 0.65);
+
+    // 2. Lost Brokerage from Diverted Buyers / Weak Follow-ups (estimated 2 to 6 lost bookings per year)
+    const benchmarkBrokerage = brokeragePerBooking > 0 ? brokeragePerBooking : 150000;
+    const lostDealsMin = Math.max(1, Math.round((q2 >= 4 ? 3 : 1.5) * scoreFactor));
+    const lostDealsMax = Math.max(lostDealsMin + 2, Math.round((q2 >= 4 ? 6 : 3.5) * scoreFactor * penalty));
+    const lostBrokerageMin = lostDealsMin * benchmarkBrokerage;
+    const lostBrokerageMax = lostDealsMax * benchmarkBrokerage;
+
+    const totalMinRupees = portalWasteMin + lostBrokerageMin;
+    const totalMaxRupees = portalWasteMax + lostBrokerageMax;
+
+    finalMin = Math.max(3, Math.round(totalMinRupees / 100000));
+    finalMax = Math.max(finalMin + 4, Math.round(totalMaxRupees / 100000));
+  } else {
+    // Volume multiplier fallback based on user's past database
+    let baseMin = 6;
+    let baseMax = 14;
+
+    const volumeStr = String(formData.crmLeadVolume || '').toLowerCase();
+    if (volumeStr.includes('10,000')) {
+      baseMin = 35;
+      baseMax = 80;
+    } else if (volumeStr.includes('5,000')) {
+      baseMin = 22;
+      baseMax = 50;
+    } else if (volumeStr.includes('1,000')) {
+      baseMin = 12;
+      baseMax = 28;
+    } else if (volumeStr.includes('less than') || volumeStr.includes('500')) {
+      baseMin = 5;
+      baseMax = 12;
+    }
+
+    const calculatedMinLakhs = Math.round(baseMin * scoreFactor * penalty);
+    const calculatedMaxLakhs = Math.round(baseMax * scoreFactor * penalty);
+
+    finalMin = Math.max(3, calculatedMinLakhs);
+    finalMax = Math.max(finalMin + 5, calculatedMaxLakhs);
+  }
 
   let formattedAnnual = '';
   if (finalMax >= 100) {
@@ -69,6 +109,13 @@ export function calculateEstimatedLeakage(totalScore = 0, formData = {}, answers
     minLakhs: finalMin,
     maxLakhs: finalMax,
     annualRaw: formattedAnnual,
+    portalSpendMonthly,
+    buyerLeadsMonthly,
+    brokeragePerBooking,
+    costPerLead,
+    costPerLeadFormatted: costPerLead ? `₹${costPerLead.toLocaleString('en-IN')}` : null,
+    portalSpendFormatted: portalSpendMonthly ? `₹${portalSpendMonthly.toLocaleString('en-IN')}` : null,
+    brokerageFormatted: brokeragePerBooking ? `₹${brokeragePerBooking.toLocaleString('en-IN')}` : null,
   };
 }
 

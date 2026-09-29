@@ -174,6 +174,41 @@ export default function ResultsView({
           </div>
         </div>
 
+        {/* Operational & Economics Baseline */}
+        {(formData.monthlyPortalSpend || formData.monthlyBuyerLeads || formData.brokeragePerBooking || analysis.leakageMetrics?.costPerLead) && (
+          <div className="p-5 sm:p-6 rounded-2xl bg-white border border-[#142E55]/10 shadow-xs">
+            <h3 className="font-serif-heading text-lg text-[#10233D] font-normal mb-3">
+              Your Firm's Portal Economics &amp; Commission Baseline
+            </h3>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
+              <div className="p-3.5 rounded-xl bg-[#F8F7F3] border border-slate-200">
+                <span className="text-[11px] uppercase font-bold text-slate-500 block">Monthly Portal Spend</span>
+                <span className="text-base sm:text-lg font-extrabold text-[#10233D] block mt-0.5">
+                  {formData.monthlyPortalSpend ? `₹${formData.monthlyPortalSpend}` : '—'}
+                </span>
+              </div>
+              <div className="p-3.5 rounded-xl bg-[#F8F7F3] border border-slate-200">
+                <span className="text-[11px] uppercase font-bold text-slate-500 block">Buyer Leads / Month</span>
+                <span className="text-base sm:text-lg font-extrabold text-slate-800 block mt-0.5">
+                  {formData.monthlyBuyerLeads ? `${formData.monthlyBuyerLeads} leads` : '—'}
+                </span>
+              </div>
+              <div className="p-3.5 rounded-xl bg-[#F8F7F3] border border-slate-200">
+                <span className="text-[11px] uppercase font-bold text-slate-500 block">Avg Cost / Lead (CPL)</span>
+                <span className="text-base sm:text-lg font-extrabold text-amber-700 block mt-0.5">
+                  {analysis.leakageMetrics?.costPerLeadFormatted || '—'}
+                </span>
+              </div>
+              <div className="p-3.5 rounded-xl bg-[#F8F7F3] border border-slate-200">
+                <span className="text-[11px] uppercase font-bold text-slate-500 block">Avg Brokerage / Deal</span>
+                <span className="text-base sm:text-lg font-extrabold text-emerald-700 block mt-0.5">
+                  {formData.brokeragePerBooking ? `₹${formData.brokeragePerBooking}` : '—'}
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Breakdown of 4 Core Leakage Channels */}
         <div>
           <h3 className="font-serif-heading text-xl text-[#10233D] font-normal mb-4">

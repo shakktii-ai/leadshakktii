@@ -382,6 +382,41 @@ export default function StandaloneReportPage() {
 
             </div>
 
+            {/* Operational & Economics Baseline */}
+            {(formData.monthlyPortalSpend || auditData.monthlyPortalSpend || formData.monthlyBuyerLeads || auditData.monthlyBuyerLeads || formData.brokeragePerBooking || auditData.brokeragePerBooking || analysis.leakageMetrics?.costPerLead) && (
+              <div className="p-5 sm:p-6 rounded-2xl bg-white border border-stone-200 shadow-xs">
+                <span className="text-xs font-bold uppercase tracking-wider text-stone-500 block mb-3">
+                  Your Agency's Portal Economics &amp; Commission Baseline
+                </span>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
+                  <div className="p-3.5 rounded-xl bg-stone-50 border border-stone-200">
+                    <span className="text-[11px] uppercase font-bold text-stone-400 block">Monthly Portal Spend</span>
+                    <span className="text-base sm:text-lg font-extrabold text-[#0B2B68] block mt-0.5">
+                      {formData.monthlyPortalSpend || auditData.monthlyPortalSpend ? `₹${formData.monthlyPortalSpend || auditData.monthlyPortalSpend}` : '—'}
+                    </span>
+                  </div>
+                  <div className="p-3.5 rounded-xl bg-stone-50 border border-stone-200">
+                    <span className="text-[11px] uppercase font-bold text-stone-400 block">Buyer Leads / Month</span>
+                    <span className="text-base sm:text-lg font-extrabold text-stone-900 block mt-0.5">
+                      {formData.monthlyBuyerLeads || auditData.monthlyBuyerLeads ? `${formData.monthlyBuyerLeads || auditData.monthlyBuyerLeads} leads` : '—'}
+                    </span>
+                  </div>
+                  <div className="p-3.5 rounded-xl bg-stone-50 border border-stone-200">
+                    <span className="text-[11px] uppercase font-bold text-stone-400 block">Avg Cost / Lead (CPL)</span>
+                    <span className="text-base sm:text-lg font-extrabold text-amber-700 block mt-0.5">
+                      {analysis.leakageMetrics?.costPerLeadFormatted || '—'}
+                    </span>
+                  </div>
+                  <div className="p-3.5 rounded-xl bg-stone-50 border border-stone-200">
+                    <span className="text-[11px] uppercase font-bold text-stone-400 block">Avg Brokerage / Deal</span>
+                    <span className="text-base sm:text-lg font-extrabold text-emerald-700 block mt-0.5">
+                      {formData.brokeragePerBooking || auditData.brokeragePerBooking ? `₹${formData.brokeragePerBooking || auditData.brokeragePerBooking}` : '—'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Assessment Narrative */}
             {analysis.summaryText && (
               <div className="p-5 sm:p-6 rounded-2xl bg-stone-50 border border-stone-200 text-stone-700 text-sm sm:text-base leading-relaxed">

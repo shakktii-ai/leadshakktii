@@ -15,6 +15,9 @@ const INITIAL_FORM_STATE = {
   microMarket: '',
   whatsappNumber: '',
   crmLeadVolume: '',
+  monthlyPortalSpend: '',
+  monthlyBuyerLeads: '',
+  brokeragePerBooking: '',
   consent: true,
 };
 

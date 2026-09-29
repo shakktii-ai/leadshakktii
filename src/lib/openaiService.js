@@ -24,6 +24,10 @@ FIRM DETAILS:
 - Real Estate Firm: ${formData.firmName || 'Real Estate Firm'}
 - Focus Micro-Market / Area: ${formData.microMarket || 'Local Micro-Market'}
 - Old CRM / Database Leads: ${formData.crmLeadVolume || 'Not specified'}
+- Monthly Spend on Property Portals: ₹${formData.monthlyPortalSpend || 'Not specified'}
+- Monthly Buyer Leads Received: ${formData.monthlyBuyerLeads || 'Not specified'} leads/month
+- Average Brokerage Earned Per Booking: ₹${formData.brokeragePerBooking || 'Not specified'}
+- Calculated Cost Per Lead (CPL): ${baseAnalysis.leakageMetrics?.costPerLeadFormatted || 'Not specified'}
 - Calculated Risk Score: ${baseAnalysis.totalScore} / 50 (${baseAnalysis.riskLevel.toUpperCase()} RISK)
 - Dynamic Calculated Leakage Baseline: ${baseAnalysis.estimatedLeakage}
 
