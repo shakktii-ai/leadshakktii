@@ -7,6 +7,8 @@ import LeadCaptureSidebar from './LeadCaptureSidebar';
 export default function MobileFormDrawer({
   isOpen,
   onClose,
+  formData,
+  onUpdateFormData,
   onSubmit,
   isSubmitting,
 }) {
@@ -34,6 +36,8 @@ export default function MobileFormDrawer({
 
         {/* Form */}
         <LeadCaptureSidebar
+          formData={formData}
+          onUpdateFormData={onUpdateFormData}
           onSubmit={async (data) => {
             await onSubmit(data);
             onClose();

@@ -22,11 +22,24 @@ const INITIAL_FORM_STATE = {
 };
 
 export default function LeadCaptureSidebar({
+  formData: parentFormData,
+  onUpdateFormData,
   onSubmit,
   isSubmitting,
   isMobileModal = false,
 }) {
-  const [formData, setFormData] = useState(INITIAL_FORM_STATE);
+  const [internalFormData, setInternalFormData] = useState(INITIAL_FORM_STATE);
+  const formData = parentFormData || internalFormData;
+  const setFormData = (newVal) => {
+    if (typeof newVal === 'function') {
+      const updated = newVal(formData);
+      if (onUpdateFormData) onUpdateFormData(updated);
+      else setInternalFormData(updated);
+    } else {
+      if (onUpdateFormData) onUpdateFormData(newVal);
+      else setInternalFormData(newVal);
+    }
+  };
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
 

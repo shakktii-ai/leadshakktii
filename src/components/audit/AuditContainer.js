@@ -32,12 +32,16 @@ export default function AuditContainer({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showResultsModal, setShowResultsModal] = useState(false);
 
-  const totalQuestions = AUDIT_QUESTIONS.length;
+  const totalQuestions = AUDIT_QUESTIONS.length + 3;
 
   // Count answered questions
   const answeredCount = useMemo(() => {
-    return Object.keys(selectedAnswers).length;
-  }, [selectedAnswers]);
+    let count = Object.keys(selectedAnswers).length;
+    if (formData.monthlyPortalSpend?.trim()) count += 1;
+    if (formData.monthlyBuyerLeads?.trim()) count += 1;
+    if (formData.brokeragePerBooking?.trim()) count += 1;
+    return count;
+  }, [selectedAnswers, formData]);
 
   // Current progress calculation
   const currentProgress = answeredCount;
@@ -51,12 +55,13 @@ export default function AuditContainer({
   };
 
   const handleLeadSubmit = async (submittedFormData) => {
-    setFormData(submittedFormData);
+    const combinedData = { ...formData, ...submittedFormData };
+    setFormData(combinedData);
     setIsSubmitting(true);
 
     try {
       // Calculate initial client analysis as baseline/fallback
-      let finalAnalysis = calculateAuditAnalysis(selectedAnswers, submittedFormData);
+      let finalAnalysis = calculateAuditAnalysis(selectedAnswers, combinedData);
       let assignedReportId = `RPT-${Date.now().toString(36).toUpperCase()}`;
 
       // Submit to backend API which triggers OpenAI report generation and MongoDB save
@@ -66,7 +71,7 @@ export default function AuditContainer({
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             answers: selectedAnswers,
-            formData: submittedFormData,
+            formData: combinedData,
           }),
         });
 
@@ -93,7 +98,7 @@ export default function AuditContainer({
       setSelectedAnswers({});
     } catch (err) {
       console.error('Audit submit error:', err);
-      const fallbackAnalysis = calculateAuditAnalysis(selectedAnswers, submittedFormData);
+      const fallbackAnalysis = calculateAuditAnalysis(selectedAnswers, combinedData);
       setAnalysis(fallbackAnalysis);
       setShowResultsModal(true);
       // Clear all selected question options after report generation
@@ -133,7 +138,7 @@ export default function AuditContainer({
                 </span>
                 <span className="text-sm font-extrabold text-brand-dark">
                   {answeredCount === totalQuestions
-                    ? 'All 10 Questions Evaluated!'
+                    ? 'All 13 Questions Evaluated!'
                     : `${answeredCount} of ${totalQuestions} Questions Answered`}
                 </span>
               </div>
@@ -163,11 +168,17 @@ export default function AuditContainer({
             <QuestionList
               selectedAnswers={selectedAnswers}
               onSelectOption={handleSelectOption}
+              formData={formData}
+              onUpdateFormField={(field, value) =>
+                setFormData((prev) => ({ ...prev, [field]: value }))
+              }
             />
 
             {/* In-flow Form on Mobile (Shown right below questions for seamless mobile filling) */}
             <div className="block lg:hidden pt-4">
               <LeadCaptureSidebar
+                formData={formData}
+                onUpdateFormData={setFormData}
                 onSubmit={handleLeadSubmit}
                 isSubmitting={isSubmitting}
                 isMobileModal={false}
@@ -178,6 +189,8 @@ export default function AuditContainer({
           {/* Right Column (5 cols): Sticky Lead Capture Form & Promo Card on Desktop */}
           <div className="hidden lg:block lg:col-span-5">
             <LeadCaptureSidebar
+              formData={formData}
+              onUpdateFormData={setFormData}
               onSubmit={handleLeadSubmit}
               isSubmitting={isSubmitting}
             />
@@ -191,6 +204,8 @@ export default function AuditContainer({
       <MobileFormDrawer
         isOpen={isMobileFormOpen}
         onClose={onCloseMobileForm}
+        formData={formData}
+        onUpdateFormData={setFormData}
         onSubmit={handleLeadSubmit}
         isSubmitting={isSubmitting}
       />
