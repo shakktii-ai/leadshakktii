@@ -4,7 +4,6 @@ import React, { useState, useMemo } from 'react';
 import { AUDIT_QUESTIONS } from '@/data/auditQuestions';
 import { calculateAuditAnalysis } from '@/utils/auditScorer';
 import QuestionList from './QuestionList';
-import LeadCaptureSidebar from './LeadCaptureSidebar';
 import ResultsModal from './ResultsModal';
 import MobileFormDrawer from './MobileFormDrawer';
 import { Sparkles, CheckCircle } from 'lucide-react';
@@ -33,16 +32,12 @@ export default function AuditContainer({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showResultsModal, setShowResultsModal] = useState(false);
 
-  const totalQuestions = AUDIT_QUESTIONS.length + 3;
+  const totalQuestions = AUDIT_QUESTIONS.length;
 
   // Count answered questions
   const answeredCount = useMemo(() => {
-    let count = Object.keys(selectedAnswers).length;
-    if (formData.monthlyPortalSpend?.trim()) count += 1;
-    if (formData.monthlyBuyerLeads?.trim()) count += 1;
-    if (formData.brokeragePerBooking?.trim()) count += 1;
-    return count;
-  }, [selectedAnswers, formData]);
+    return Object.keys(selectedAnswers).length;
+  }, [selectedAnswers]);
 
   // Current progress calculation
   const currentProgress = answeredCount;
@@ -56,6 +51,14 @@ export default function AuditContainer({
   };
 
   const handleLeadSubmit = async (submittedFormData) => {
+    // Block report generation unless all questions are answered
+    if (answeredCount < totalQuestions) {
+      // Scroll to the questions section so user answers them
+      const el = document.getElementById('audit-section');
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+
     const combinedData = { ...formData, ...submittedFormData };
     setFormData(combinedData);
     setSubmittedLeadData(combinedData);
@@ -124,82 +127,16 @@ export default function AuditContainer({
   };
 
   return (
-    <section id="audit-section" className="py-8 sm:py-12 bg-slate-50/70 border-b border-stone-200/80">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
-        {/* Progress Bar & Header Banner */}
-        <div className="bg-white rounded-2xl p-4 sm:p-5 border border-stone-200 shadow-xs mb-8">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
-            <div className="flex items-center gap-2">
-              <span className="w-8 h-8 rounded-lg bg-brand-primary/10 text-brand-primary flex items-center justify-center font-bold text-xs">
-                <Sparkles className="w-4 h-4" />
-              </span>
-              <div>
-                <span className="text-xs font-bold uppercase tracking-wider text-stone-500 block">
-                  Diagnostic Progress
-                </span>
-                <span className="text-sm font-extrabold text-brand-dark">
-                  {answeredCount === totalQuestions
-                    ? 'All 13 Questions Evaluated!'
-                    : `${answeredCount} of ${totalQuestions} Questions Answered`}
-                </span>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 self-end sm:self-auto">
-              <span className="text-xs font-extrabold text-brand-primary bg-brand-primary/10 px-3 py-1 rounded-full">
-                {progressPercentage}% Completed
-              </span>
-            </div>
-          </div>
-
-          {/* Progress Bar Track */}
-          <div className="w-full bg-stone-100 h-2.5 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-gradient-to-r from-brand-primary to-brand-secondary rounded-full transition-all duration-400 ease-out"
-              style={{ width: `${Math.max(5, progressPercentage)}%` }}
-            />
-          </div>
-        </div>
-
-        {/* 2-Column Grid: Left Questions, Right Sticky Lead Form */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-
-          {/* Left Column (7 cols): Questions with Eye-Openers */}
-          <div className="lg:col-span-7 space-y-8">
-            <QuestionList
-              selectedAnswers={selectedAnswers}
-              onSelectOption={handleSelectOption}
-              formData={formData}
-              onUpdateFormField={(field, value) =>
-                setFormData((prev) => ({ ...prev, [field]: value }))
-              }
-            />
-
-            {/* In-flow Form on Mobile (Shown right below questions for seamless mobile filling) */}
-            <div className="block lg:hidden pt-4">
-              <LeadCaptureSidebar
-                formData={formData}
-                onUpdateFormData={setFormData}
-                onSubmit={handleLeadSubmit}
-                isSubmitting={isSubmitting}
-                isMobileModal={false}
-              />
-            </div>
-          </div>
-
-          {/* Right Column (5 cols): Sticky Lead Capture Form & Promo Card on Desktop */}
-          <div className="hidden lg:block lg:col-span-5">
-            <LeadCaptureSidebar
-              formData={formData}
-              onUpdateFormData={setFormData}
-              onSubmit={handleLeadSubmit}
-              isSubmitting={isSubmitting}
-            />
-          </div>
-
-        </div>
-
+    <section id="audit-section" className="pt-3 pb-8 sm:pt-5 sm:pb-12 bg-slate-50/70 border-b border-stone-200/80">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <QuestionList
+          selectedAnswers={selectedAnswers}
+          onSelectOption={handleSelectOption}
+          formData={formData}
+          onUpdateFormData={setFormData}
+          onSubmitLead={handleLeadSubmit}
+          isSubmitting={isSubmitting}
+        />
       </div>
 
       {/* Mobile Form Drawer (Slide-up modal when tapping 'Fill Form' on mobile header / hero / sticky bar) */}

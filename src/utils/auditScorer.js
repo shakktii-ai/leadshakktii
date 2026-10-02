@@ -5,21 +5,51 @@ import { AUDIT_QUESTIONS } from '@/data/auditQuestions';
  * buyer leads per month, brokerage per booking, risk score, and channel points.
  */
 export function calculateEstimatedLeakage(totalScore = 0, formData = {}, answersSummary = []) {
-  // Parse numeric values from 3 new inputs
+  // Parse numeric values if provided
   const parseNum = (val) => {
     if (!val) return 0;
     const cleaned = String(val).replace(/[^0-9.]/g, '');
     return parseFloat(cleaned) || 0;
   };
 
-  const portalSpendMonthly = parseNum(formData.monthlyPortalSpend);
-  const buyerLeadsMonthly = parseNum(formData.monthlyBuyerLeads);
-  const brokeragePerBooking = parseNum(formData.brokeragePerBooking);
+  let portalSpendMonthly = parseNum(formData.monthlyPortalSpend);
+  let buyerLeadsMonthly = parseNum(formData.monthlyBuyerLeads);
+  let brokeragePerBooking = parseNum(formData.brokeragePerBooking);
+
+  // If not entered, determine smart industry benchmarks based on selected CRM volume
+  if (!portalSpendMonthly || !buyerLeadsMonthly || !brokeragePerBooking) {
+    const volumeStr = String(formData.crmLeadVolume || '').toLowerCase();
+    let defaultSpend = 50000;
+    let defaultLeads = 100;
+    let defaultBrokerage = 350000;
+
+    if (volumeStr.includes('10,000')) {
+      defaultSpend = 125000;
+      defaultLeads = 220;
+      defaultBrokerage = 500000;
+    } else if (volumeStr.includes('5,000')) {
+      defaultSpend = 75000;
+      defaultLeads = 140;
+      defaultBrokerage = 400000;
+    } else if (volumeStr.includes('1,000')) {
+      defaultSpend = 50000;
+      defaultLeads = 100;
+      defaultBrokerage = 350000;
+    } else {
+      defaultSpend = 35000;
+      defaultLeads = 70;
+      defaultBrokerage = 250000;
+    }
+
+    if (!portalSpendMonthly) portalSpendMonthly = defaultSpend;
+    if (!buyerLeadsMonthly) buyerLeadsMonthly = defaultLeads;
+    if (!brokeragePerBooking) brokeragePerBooking = defaultBrokerage;
+  }
 
   const costPerLead =
     portalSpendMonthly > 0 && buyerLeadsMonthly > 0
       ? Math.round(portalSpendMonthly / buyerLeadsMonthly)
-      : null;
+      : 500;
 
   // Channel penalties
   const q1 = answersSummary.find((a) => a.questionId === 1)?.riskPoints || 0;
@@ -36,51 +66,23 @@ export function calculateEstimatedLeakage(totalScore = 0, formData = {}, answers
   let finalMin = 0;
   let finalMax = 0;
 
-  // If user provided concrete monthly portal spend or brokerage numbers, use direct unit economics
-  if (portalSpendMonthly > 0 || brokeragePerBooking > 0) {
-    // 1. Shared Portal Spend Waste (60% to 80% wasted on non-exclusive portal leads)
-    const annualPortalSpend = portalSpendMonthly * 12;
-    const portalWasteMin = annualPortalSpend * (q1 >= 4 ? 0.65 : 0.45);
-    const portalWasteMax = annualPortalSpend * (q1 >= 4 ? 0.85 : 0.65);
+  // 1. Shared Portal Spend Waste (60% to 80% wasted on non-exclusive portal leads)
+  const annualPortalSpend = portalSpendMonthly * 12;
+  const portalWasteMin = annualPortalSpend * (q1 >= 4 ? 0.65 : 0.45);
+  const portalWasteMax = annualPortalSpend * (q1 >= 4 ? 0.85 : 0.65);
 
-    // 2. Lost Brokerage from Diverted Buyers / Weak Follow-ups (estimated 2 to 6 lost bookings per year)
-    const benchmarkBrokerage = brokeragePerBooking > 0 ? brokeragePerBooking : 150000;
-    const lostDealsMin = Math.max(1, Math.round((q2 >= 4 ? 3 : 1.5) * scoreFactor));
-    const lostDealsMax = Math.max(lostDealsMin + 2, Math.round((q2 >= 4 ? 6 : 3.5) * scoreFactor * penalty));
-    const lostBrokerageMin = lostDealsMin * benchmarkBrokerage;
-    const lostBrokerageMax = lostDealsMax * benchmarkBrokerage;
+  // 2. Lost Brokerage from Diverted Buyers / Weak Follow-ups (estimated 2 to 6 lost bookings per year)
+  const benchmarkBrokerage = brokeragePerBooking > 0 ? brokeragePerBooking : 350000;
+  const lostDealsMin = Math.max(1, Math.round((q2 >= 4 ? 3 : 1.5) * scoreFactor));
+  const lostDealsMax = Math.max(lostDealsMin + 2, Math.round((q2 >= 4 ? 6 : 3.5) * scoreFactor * penalty));
+  const lostBrokerageMin = lostDealsMin * benchmarkBrokerage;
+  const lostBrokerageMax = lostDealsMax * benchmarkBrokerage;
 
-    const totalMinRupees = portalWasteMin + lostBrokerageMin;
-    const totalMaxRupees = portalWasteMax + lostBrokerageMax;
+  const totalMinRupees = portalWasteMin + lostBrokerageMin;
+  const totalMaxRupees = portalWasteMax + lostBrokerageMax;
 
-    finalMin = Math.max(3, Math.round(totalMinRupees / 100000));
-    finalMax = Math.max(finalMin + 4, Math.round(totalMaxRupees / 100000));
-  } else {
-    // Volume multiplier fallback based on user's past database
-    let baseMin = 6;
-    let baseMax = 14;
-
-    const volumeStr = String(formData.crmLeadVolume || '').toLowerCase();
-    if (volumeStr.includes('10,000')) {
-      baseMin = 35;
-      baseMax = 80;
-    } else if (volumeStr.includes('5,000')) {
-      baseMin = 22;
-      baseMax = 50;
-    } else if (volumeStr.includes('1,000')) {
-      baseMin = 12;
-      baseMax = 28;
-    } else if (volumeStr.includes('less than') || volumeStr.includes('500')) {
-      baseMin = 5;
-      baseMax = 12;
-    }
-
-    const calculatedMinLakhs = Math.round(baseMin * scoreFactor * penalty);
-    const calculatedMaxLakhs = Math.round(baseMax * scoreFactor * penalty);
-
-    finalMin = Math.max(3, calculatedMinLakhs);
-    finalMax = Math.max(finalMin + 5, calculatedMaxLakhs);
-  }
+  finalMin = Math.max(3, Math.round(totalMinRupees / 100000));
+  finalMax = Math.max(finalMin + 4, Math.round(totalMaxRupees / 100000));
 
   let formattedAnnual = '';
   if (finalMax >= 100) {
@@ -113,9 +115,9 @@ export function calculateEstimatedLeakage(totalScore = 0, formData = {}, answers
     buyerLeadsMonthly,
     brokeragePerBooking,
     costPerLead,
-    costPerLeadFormatted: costPerLead ? `₹${costPerLead.toLocaleString('en-IN')}` : null,
-    portalSpendFormatted: portalSpendMonthly ? `₹${portalSpendMonthly.toLocaleString('en-IN')}` : null,
-    brokerageFormatted: brokeragePerBooking ? `₹${brokeragePerBooking.toLocaleString('en-IN')}` : null,
+    costPerLeadFormatted: `₹${costPerLead.toLocaleString('en-IN')}`,
+    portalSpendFormatted: `₹${portalSpendMonthly.toLocaleString('en-IN')}`,
+    brokerageFormatted: `₹${brokeragePerBooking.toLocaleString('en-IN')}`,
   };
 }
 
@@ -134,9 +136,10 @@ export function calculateAuditAnalysis(selectedAnswers = {}, formData = {}) {
       questionId: q.id,
       category: q.category,
       question: q.question,
-      selectedOptionText: option ? option.text : 'Not selected',
+      selectedOptionText: option ? option.text : 'Not answered',
       riskPoints: points,
       maxPoints: 5,
+      answered: !!selectedAnswers[q.id],
     };
   });
 

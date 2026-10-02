@@ -438,6 +438,65 @@ export default function StandaloneReportPage() {
               </div>
             )}
 
+            {/* YOUR AUDIT ANSWERS SECTION */}
+            {analysis.answersSummary && analysis.answersSummary.length > 0 && (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-bold text-stone-900 flex items-center gap-2">
+                    <HelpCircle className="w-5 h-5 text-brand-primary" />
+                    <span>Your Audit Answers</span>
+                  </h3>
+                  <span className="text-xs text-stone-500 font-medium">
+                    {analysis.answersSummary.length} Questions Answered
+                  </span>
+                </div>
+
+                <div className="space-y-2.5">
+                  {analysis.answersSummary.map((item, idx) => {
+                    const isCrit = item.riskPoints >= 4;
+                    const isMod = item.riskPoints >= 2;
+                    return (
+                      <div
+                        key={item.questionId || idx}
+                        className="rounded-xl border border-stone-200 bg-white overflow-hidden shadow-xs"
+                      >
+                        <div className="p-4 sm:p-5 flex items-start gap-4">
+                          <div className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-extrabold shrink-0 mt-0.5 ${
+                            isCrit ? 'bg-rose-100 text-rose-700' : isMod ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'
+                          }`}>
+                            {idx + 1}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-stone-400 block mb-1">
+                              {item.category?.split('. ')[1] || item.category}
+                            </span>
+                            <p className="text-sm sm:text-base font-semibold text-stone-700 leading-snug mb-2.5">
+                              {item.question}
+                            </p>
+                            <div className={`flex items-start gap-2 p-3 rounded-xl border text-sm font-medium leading-snug ${
+                              isCrit
+                                ? 'bg-rose-50 border-rose-200 text-rose-800'
+                                : isMod
+                                ? 'bg-amber-50 border-amber-200 text-amber-800'
+                                : 'bg-emerald-50 border-emerald-200 text-emerald-800'
+                            }`}>
+                              <span className="shrink-0">{isCrit ? '⚠️' : isMod ? '🔶' : '✅'}</span>
+                              <span>{item.selectedOptionText}</span>
+                            </div>
+                          </div>
+                          <div className={`shrink-0 text-xs font-extrabold px-2.5 py-1 rounded-full mt-0.5 ${
+                            isCrit ? 'bg-rose-100 text-rose-700' : isMod ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'
+                          }`}>
+                            {item.riskPoints}/{item.maxPoints}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
             {/* EXPANDABLE SECTION 1: Vulnerability Diagnostics */}
             <div className="space-y-4">
               <div className="flex items-center justify-between">

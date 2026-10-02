@@ -2,7 +2,7 @@ export const AUDIT_QUESTIONS = [
   {
     id: 1,
     category: '1. Lead Sharing & Portal Costs',
-    question: 'When you buy buyer leads from property portals, what is your biggest headache?',
+    question: 'When you buyer leads from property portals, what is your biggest headache?',
     iconType: 'coins',
     options: [
       {

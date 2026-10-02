@@ -15,19 +15,18 @@ if (!cached) {
 }
 
 async function connectDB() {
+  const uri = process.env.MONGODB_URI || MONGODB_URI;
+
+  if (!uri) {
+    // Return null gracefully when MONGODB_URI is not set, enabling in-memory store
+    return null;
+  }
+
   // Ensure DNS resolvers can query Atlas SRV records
   try {
     dns.setServers(["8.8.8.8", "8.8.4.4", "1.1.1.1"]);
   } catch (e) {
     // Ignore in restricted environments
-  }
-
-  const uri = process.env.MONGODB_URI || MONGODB_URI;
-
-  if (!uri) {
-    throw new Error(
-      "Please define the MONGODB_URI environment variable inside .env.local"
-    );
   }
 
   if (cached.conn) {
@@ -48,7 +47,8 @@ async function connectDB() {
     cached.conn = await cached.promise;
   } catch (error) {
     cached.promise = null;
-    throw error;
+    console.warn("MongoDB connection warning:", error.message);
+    return null;
   }
 
   return cached.conn;

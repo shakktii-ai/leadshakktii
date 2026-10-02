@@ -136,7 +136,7 @@ export default function ResultsModal({
           </h2>
 
           <p className="text-xs sm:text-sm text-blue-100/90">
-            Target Focus: <strong className="text-white">{formData.microMarket || 'Local Micro-Market'}</strong> · Advisor: <strong className="text-white">{formData.fullName || 'Broker'}</strong>
+            Target Focus: <strong className="text-white">{formData.microMarket || 'Local Micro-Market'}</strong> Client Name: <strong className="text-white">{formData.fullName || 'Broker'}</strong>
           </p>
         </div>
 
@@ -162,10 +162,10 @@ export default function ResultsModal({
 
           {/* Score Donut Gauge & Dynamic Leakage Cards */}
           <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-stretch">
-            
+
             {/* Circular Score Gauge Card (7 Cols) */}
             <div className="md:col-span-7 p-5 rounded-2xl bg-stone-50 border border-stone-200 flex flex-col sm:flex-row items-center gap-5 justify-between">
-              
+
               {/* Circular SVG Gauge */}
               <div className="relative w-28 h-28 shrink-0 flex items-center justify-center">
                 <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
@@ -254,8 +254,7 @@ export default function ResultsModal({
                 <span className="text-[10px] uppercase font-bold text-stone-400 block">Monthly Portal Spend</span>
                 <span className="text-sm sm:text-base font-extrabold text-[#0B2B68] block mt-0.5">
                   {(() => {
-                    const val = formData.monthlyPortalSpend || analysis.leakageMetrics?.portalSpendFormatted || analysis.formData?.monthlyPortalSpend;
-                    if (!val) return '—';
+                    const val = formData.monthlyPortalSpend || analysis.leakageMetrics?.portalSpendFormatted || analysis.formData?.monthlyPortalSpend || '₹50,000';
                     const s = String(val).trim();
                     return s.startsWith('₹') ? s : `₹${s}`;
                   })()}
@@ -265,8 +264,7 @@ export default function ResultsModal({
                 <span className="text-[10px] uppercase font-bold text-stone-400 block">Buyer Leads / Month</span>
                 <span className="text-sm sm:text-base font-extrabold text-stone-900 block mt-0.5">
                   {(() => {
-                    const val = formData.monthlyBuyerLeads || analysis.leakageMetrics?.buyerLeadsMonthly || analysis.formData?.monthlyBuyerLeads;
-                    if (!val) return '—';
+                    const val = formData.monthlyBuyerLeads || analysis.leakageMetrics?.buyerLeadsMonthly || analysis.formData?.monthlyBuyerLeads || '100 leads';
                     const s = String(val).trim();
                     return s.toLowerCase().includes('lead') ? s : `${s} leads`;
                   })()}
@@ -276,15 +274,14 @@ export default function ResultsModal({
                 <span className="text-[10px] uppercase font-bold text-stone-400 block">Avg Cost / Lead (CPL)</span>
                 <span className="text-sm sm:text-base font-extrabold text-amber-700 block mt-0.5">
                   {analysis.leakageMetrics?.costPerLeadFormatted ||
-                    (analysis.leakageMetrics?.costPerLead ? `₹${analysis.leakageMetrics.costPerLead.toLocaleString('en-IN')}` : '—')}
+                    (analysis.leakageMetrics?.costPerLead ? `₹${analysis.leakageMetrics.costPerLead.toLocaleString('en-IN')}` : '₹500')}
                 </span>
               </div>
               <div className="p-3 rounded-xl bg-stone-50 border border-stone-100">
                 <span className="text-[10px] uppercase font-bold text-stone-400 block">Avg Brokerage / Deal</span>
                 <span className="text-sm sm:text-base font-extrabold text-emerald-700 block mt-0.5">
                   {(() => {
-                    const val = formData.brokeragePerBooking || analysis.leakageMetrics?.brokerageFormatted || analysis.formData?.brokeragePerBooking;
-                    if (!val) return '—';
+                    const val = formData.brokeragePerBooking || analysis.leakageMetrics?.brokerageFormatted || analysis.formData?.brokeragePerBooking || '₹3,50,000';
                     const s = String(val).trim();
                     return s.startsWith('₹') ? s : `₹${s}`;
                   })()}
@@ -297,6 +294,72 @@ export default function ResultsModal({
           {analysis.summaryText && (
             <div className="p-4 sm:p-5 rounded-2xl bg-stone-50 border border-stone-200/90 text-stone-700 text-xs sm:text-sm leading-relaxed font-medium">
               <p>{analysis.summaryText}</p>
+            </div>
+          )}
+
+          {/* YOUR AUDIT ANSWERS SECTION */}
+          {analysis.answersSummary && analysis.answersSummary.length > 0 && (
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-stone-700 flex items-center gap-2">
+                  <HelpCircle className="w-4 h-4 text-brand-primary" />
+                  <span>Your Audit Answers</span>
+                </h3>
+                <span className="text-[11px] text-stone-400 font-medium">
+                  {analysis.answersSummary.length} Questions
+                </span>
+              </div>
+
+              <div className="space-y-2">
+                {analysis.answersSummary.map((item, idx) => {
+                  const isCrit = item.riskPoints >= 4;
+                  const isMod = item.riskPoints >= 2;
+                  return (
+                    <div
+                      key={item.questionId || idx}
+                      className="rounded-xl border border-stone-200 bg-white overflow-hidden shadow-2xs"
+                    >
+                      <div className="p-3 sm:p-4 flex items-start gap-3">
+                        {/* Question number badge */}
+                        <div className={`w-6 h-6 rounded-lg flex items-center justify-center text-[11px] font-extrabold shrink-0 mt-0.5 ${
+                          isCrit ? 'bg-rose-100 text-rose-700' : isMod ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'
+                        }`}>
+                          {idx + 1}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          {/* Category */}
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-stone-400 block mb-0.5">
+                            {item.category?.split('. ')[1] || item.category}
+                          </span>
+                          {/* Question */}
+                          <p className="text-xs sm:text-sm font-semibold text-stone-700 leading-snug mb-2">
+                            {item.question}
+                          </p>
+                          {/* Selected Answer */}
+                          <div className={`flex items-start gap-2 p-2.5 rounded-lg border text-xs font-medium leading-snug ${
+                            isCrit
+                              ? 'bg-rose-50 border-rose-200 text-rose-800'
+                              : isMod
+                              ? 'bg-amber-50 border-amber-200 text-amber-800'
+                              : 'bg-emerald-50 border-emerald-200 text-emerald-800'
+                          }`}>
+                            <span className="shrink-0 mt-0.5">
+                              {isCrit ? '⚠️' : isMod ? '🔶' : '✅'}
+                            </span>
+                            <span>{item.selectedOptionText}</span>
+                          </div>
+                        </div>
+                        {/* Risk score chip */}
+                        <div className={`shrink-0 text-[10px] font-extrabold px-2 py-0.5 rounded-full mt-0.5 ${
+                          isCrit ? 'bg-rose-100 text-rose-700' : isMod ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'
+                        }`}>
+                          {item.riskPoints}/{item.maxPoints}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           )}
 
@@ -331,9 +394,8 @@ export default function ResultsModal({
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         <span
-                          className={`w-2.5 h-2.5 rounded-full shrink-0 ${
-                            isCrit ? 'bg-rose-500' : isMod ? 'bg-amber-500' : 'bg-emerald-500'
-                          }`}
+                          className={`w-2.5 h-2.5 rounded-full shrink-0 ${isCrit ? 'bg-rose-500' : isMod ? 'bg-amber-500' : 'bg-emerald-500'
+                            }`}
                         />
                         <div className="min-w-0">
                           <span className="font-bold text-xs sm:text-sm text-stone-900 block truncate">
@@ -347,20 +409,18 @@ export default function ResultsModal({
 
                       <div className="flex items-center gap-2 shrink-0">
                         <span
-                          className={`text-[10px] uppercase font-extrabold px-2.5 py-0.5 rounded-full ${
-                            isCrit
-                              ? 'bg-rose-100 text-rose-800'
-                              : isMod
+                          className={`text-[10px] uppercase font-extrabold px-2.5 py-0.5 rounded-full ${isCrit
+                            ? 'bg-rose-100 text-rose-800'
+                            : isMod
                               ? 'bg-amber-100 text-amber-800'
                               : 'bg-emerald-100 text-emerald-800'
-                          }`}
+                            }`}
                         >
                           {area.severity}
                         </span>
                         <ChevronDown
-                          className={`w-4 h-4 text-stone-400 transition-transform duration-200 ${
-                            isExpanded ? 'transform rotate-180 text-stone-800' : ''
-                          }`}
+                          className={`w-4 h-4 text-stone-400 transition-transform duration-200 ${isExpanded ? 'transform rotate-180 text-stone-800' : ''
+                            }`}
                         />
                       </div>
                     </button>
@@ -450,9 +510,8 @@ export default function ResultsModal({
                           {rec.urgency || 'Immediate'}
                         </span>
                         <ChevronDown
-                          className={`w-4 h-4 text-stone-400 transition-transform duration-200 ${
-                            isExpanded ? 'transform rotate-180 text-stone-800' : ''
-                          }`}
+                          className={`w-4 h-4 text-stone-400 transition-transform duration-200 ${isExpanded ? 'transform rotate-180 text-stone-800' : ''
+                            }`}
                         />
                       </div>
                     </button>
@@ -488,7 +547,7 @@ export default function ResultsModal({
             <span className="text-[11px] font-bold uppercase tracking-wider text-amber-400 block">
               Strategic Model Comparison
             </span>
-            
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
               <div className="p-3 rounded-xl bg-white/5 border border-white/10 space-y-1.5">
                 <span className="text-rose-400 font-bold block">❌ Rented Portal Model:</span>
@@ -512,7 +571,7 @@ export default function ResultsModal({
 
           {/* REPORT SHARING & ACTIONS BAR */}
           <div className="pt-2 border-t border-stone-200 space-y-3">
-            
+
             {/* Report URL & Copy Tool */}
             <div className="flex flex-wrap items-center justify-between gap-2 p-3 rounded-xl bg-stone-100 border border-stone-200 text-xs">
               <div className="flex items-center gap-2 min-w-0">

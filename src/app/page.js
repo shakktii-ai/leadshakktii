@@ -35,7 +35,7 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen flex flex-col bg-[#F8FAFC] text-slate-900 font-sans selection:bg-blue-100 selection:text-blue-900 pb-16 lg:pb-0">
+    <main className="min-h-screen flex flex-col bg-[#F8FAFC] text-slate-900 font-sans selection:bg-blue-100 selection:text-blue-900">
       {/* 1. Clean Top Navbar with working links */}
       <Header onStartAudit={scrollToAudit} />
 

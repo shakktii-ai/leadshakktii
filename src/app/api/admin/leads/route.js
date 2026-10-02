@@ -1,12 +1,26 @@
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
 import Audit from "@/lib/models/Audit";
+import { memoryStore } from "@/lib/memoryStore";
 
 export async function GET() {
   try {
-    await connectDB();
+    let leads = [];
 
-    const leads = await Audit.find({}).sort({ createdAt: -1 }).lean();
+    // 1. Try querying MongoDB if available
+    try {
+      const conn = await connectDB();
+      if (conn) {
+        leads = await Audit.find({}).sort({ createdAt: -1 }).lean();
+      }
+    } catch (dbError) {
+      console.warn("MongoDB admin query error, falling back to memory store:", dbError?.message);
+    }
+
+    // 2. Merge or fallback to memoryStore if no DB records found
+    if (!leads || leads.length === 0) {
+      leads = memoryStore.getAllAudits();
+    }
 
     const totalLeads = leads.length;
     const highRiskCount = leads.filter((l) => l.riskLevel === "high").length;
@@ -52,27 +66,39 @@ export async function DELETE(request) {
       );
     }
 
-    await connectDB();
-    const deleted = await Audit.findOneAndDelete({ leadId });
+    let deleted = null;
+
+    try {
+      const conn = await connectDB();
+      if (conn) {
+        deleted = await Audit.findOneAndDelete({ leadId });
+      }
+    } catch (dbError) {
+      console.warn("MongoDB delete error, falling back to memory store:", dbError?.message);
+    }
+
+    if (!deleted) {
+      deleted = memoryStore.deleteAudit(leadId);
+    }
 
     if (!deleted) {
       return NextResponse.json(
         { success: false, error: "Lead record not found" },
-        { status: 400 }
+        { status: 404 }
       );
     }
 
     return NextResponse.json(
       {
         success: true,
-        message: `Lead ${leadId} deleted successfully`,
+        message: "Lead record deleted successfully",
       },
       { status: 200 }
     );
   } catch (error) {
     console.error("Error deleting lead:", error);
     return NextResponse.json(
-      { success: false, error: error?.message || "Failed to delete lead" },
+      { success: false, error: error?.message || "Internal server error" },
       { status: 500 }
     );
   }

@@ -21,6 +21,14 @@ export const metadata = {
     'Shakktii AI',
   ],
   authors: [{ name: 'Shakktii AI' }],
+  icons: {
+    icon: [
+      { url: '/icon.png' },
+      { url: '/favicon.ico' },
+    ],
+    shortcut: '/icon.png',
+    apple: '/icon.png',
+  },
   openGraph: {
     title: 'Real Estate Lead Protection Audit | Shakktii AI',
     description:

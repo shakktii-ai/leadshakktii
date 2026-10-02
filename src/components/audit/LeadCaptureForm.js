@@ -62,18 +62,6 @@ export default function LeadCaptureForm({
       newErrors.crmLeadVolume = 'Please select your current CRM / phone lead volume.';
     }
 
-    if (!data.monthlyPortalSpend?.trim()) {
-      newErrors.monthlyPortalSpend = 'Please enter your approx. monthly spend on property portals.';
-    }
-
-    if (!data.monthlyBuyerLeads?.trim()) {
-      newErrors.monthlyBuyerLeads = 'Please enter approx. buyer leads received per month.';
-    }
-
-    if (!data.brokeragePerBooking?.trim()) {
-      newErrors.brokeragePerBooking = 'Please enter average brokerage earned per booking.';
-    }
-
     if (!data.consent) {
       newErrors.consent = 'You must agree to be contacted to receive your customized audit.';
     }
@@ -105,9 +93,6 @@ export default function LeadCaptureForm({
       microMarket: true,
       whatsappNumber: true,
       crmLeadVolume: true,
-      monthlyPortalSpend: true,
-      monthlyBuyerLeads: true,
-      brokeragePerBooking: true,
       consent: true,
     };
     setTouched(allTouched);
@@ -320,102 +305,6 @@ export default function LeadCaptureForm({
             <p className="text-base text-red-600 mt-3 flex items-center gap-2">
               <AlertCircle className="w-5 h-5" />
               <span>{errors.crmLeadVolume}</span>
-            </p>
-          )}
-        </div>
-
-        {/* 1. Approx. monthly spend on property portals? */}
-        <div>
-          <label htmlFor="monthlyPortalSpend" className="block text-lg sm:text-xl font-bold text-[#10233D] mb-4">
-            1. Approx. monthly spend on property portals? <span className="text-red-500">*</span>
-          </label>
-          <div className="flex rounded-xl border overflow-hidden focus-within:ring-2 focus-within:ring-[#10233D]/10 focus-within:border-[#10233D] border-slate-300 min-h-[64px]">
-            <span className="inline-flex items-center px-6 bg-slate-100 text-slate-700 font-bold text-lg border-r border-slate-300 select-none">
-              ₹
-            </span>
-            <input
-              type="text"
-              inputMode="numeric"
-              id="monthlyPortalSpend"
-              name="monthlyPortalSpend"
-              value={formData.monthlyPortalSpend}
-              onChange={(e) => {
-                const val = e.target.value.replace(/[^0-9,]/g, '');
-                handleChange('monthlyPortalSpend', val);
-              }}
-              onBlur={() => handleBlur('monthlyPortalSpend')}
-              placeholder="e.g. 50,000"
-              className="w-full px-5 py-5 bg-white text-lg sm:text-xl text-[#10233D] placeholder:text-slate-400 focus:outline-none"
-            />
-          </div>
-          {errors.monthlyPortalSpend && touched.monthlyPortalSpend && (
-            <p className="text-base text-red-600 mt-3 flex items-center gap-2">
-              <AlertCircle className="w-5 h-5" />
-              <span>{errors.monthlyPortalSpend}</span>
-            </p>
-          )}
-        </div>
-
-        {/* 2. Approx. buyer leads received per month? */}
-        <div>
-          <label htmlFor="monthlyBuyerLeads" className="block text-lg sm:text-xl font-bold text-[#10233D] mb-4">
-            2. Approx. buyer leads received per month? <span className="text-red-500">*</span>
-          </label>
-          <div className="flex rounded-xl border overflow-hidden focus-within:ring-2 focus-within:ring-[#10233D]/10 focus-within:border-[#10233D] border-slate-300 min-h-[64px]">
-            <input
-              type="text"
-              inputMode="numeric"
-              id="monthlyBuyerLeads"
-              name="monthlyBuyerLeads"
-              value={formData.monthlyBuyerLeads}
-              onChange={(e) => {
-                const val = e.target.value.replace(/[^0-9]/g, '');
-                handleChange('monthlyBuyerLeads', val);
-              }}
-              onBlur={() => handleBlur('monthlyBuyerLeads')}
-              placeholder="e.g. 60"
-              className="w-full px-5 py-5 bg-white text-lg sm:text-xl text-[#10233D] placeholder:text-slate-400 focus:outline-none"
-            />
-            <span className="inline-flex items-center px-6 bg-slate-100 text-slate-700 font-semibold text-base border-l border-slate-300 select-none">
-              leads
-            </span>
-          </div>
-          {errors.monthlyBuyerLeads && touched.monthlyBuyerLeads && (
-            <p className="text-base text-red-600 mt-3 flex items-center gap-2">
-              <AlertCircle className="w-5 h-5" />
-              <span>{errors.monthlyBuyerLeads}</span>
-            </p>
-          )}
-        </div>
-
-        {/* 3. Average brokerage earned per booking? */}
-        <div>
-          <label htmlFor="brokeragePerBooking" className="block text-lg sm:text-xl font-bold text-[#10233D] mb-4">
-            3. Average brokerage earned per booking? <span className="text-red-500">*</span>
-          </label>
-          <div className="flex rounded-xl border overflow-hidden focus-within:ring-2 focus-within:ring-[#10233D]/10 focus-within:border-[#10233D] border-slate-300 min-h-[64px]">
-            <span className="inline-flex items-center px-6 bg-slate-100 text-slate-700 font-bold text-lg border-r border-slate-300 select-none">
-              ₹
-            </span>
-            <input
-              type="text"
-              inputMode="numeric"
-              id="brokeragePerBooking"
-              name="brokeragePerBooking"
-              value={formData.brokeragePerBooking}
-              onChange={(e) => {
-                const val = e.target.value.replace(/[^0-9,]/g, '');
-                handleChange('brokeragePerBooking', val);
-              }}
-              onBlur={() => handleBlur('brokeragePerBooking')}
-              placeholder="e.g. 1,50,000"
-              className="w-full px-5 py-5 bg-white text-lg sm:text-xl text-[#10233D] placeholder:text-slate-400 focus:outline-none"
-            />
-          </div>
-          {errors.brokeragePerBooking && touched.brokeragePerBooking && (
-            <p className="text-base text-red-600 mt-3 flex items-center gap-2">
-              <AlertCircle className="w-5 h-5" />
-              <span>{errors.brokeragePerBooking}</span>
             </p>
           )}
         </div>

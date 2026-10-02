@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
 import Audit from "@/lib/models/Audit";
 import { generateOpenAIReport } from "@/lib/openaiService";
+import { memoryStore } from "@/lib/memoryStore";
 
 export async function POST(request) {
   try {
@@ -39,7 +40,7 @@ export async function POST(request) {
       );
     }
 
-    // Generate personalized AI Diagnostic Report using OpenAI
+    // Generate personalized AI Diagnostic Report using OpenAI or fallback rule engine
     const reportAnalysis = await generateOpenAIReport({
       answers: answers || {},
       formData,
@@ -55,11 +56,7 @@ export async function POST(request) {
       .substring(2, 6)
       .toUpperCase()}`;
 
-    // Connect to MongoDB Atlas
-    await connectDB();
-
-    // Save the complete audit submission with AI report to MongoDB
-    const savedAudit = await Audit.create({
+    const auditPayload = {
       leadId,
       reportId,
       fullName: formData.fullName.trim(),
@@ -79,16 +76,30 @@ export async function POST(request) {
       riskLevel: reportAnalysis.riskLevel,
       statusLabel: reportAnalysis.statusLabel,
       answersCount: Object.keys(answers || {}).length,
-    });
+      createdAt: new Date().toISOString(),
+    };
+
+    // 1. Always save to in-memory store for instant zero-config availability
+    memoryStore.saveAudit(auditPayload);
+
+    // 2. If MongoDB is configured, save to database as well
+    try {
+      const conn = await connectDB();
+      if (conn) {
+        await Audit.create(auditPayload);
+      }
+    } catch (dbError) {
+      console.warn("MongoDB persistence skipped, saved in memory store:", dbError?.message);
+    }
 
     // Return the response with unique reportId and reportUrl
     return NextResponse.json(
       {
         success: true,
-        message: "Audit successfully generated with OpenAI and saved to MongoDB",
-        leadId: savedAudit.leadId,
-        reportId: savedAudit.reportId,
-        reportUrl: `/report/${savedAudit.reportId}`,
+        message: "Audit successfully generated",
+        leadId,
+        reportId,
+        reportUrl: `/report/${reportId}`,
         analysis: reportAnalysis,
       },
       { status: 200 }
@@ -102,4 +113,3 @@ export async function POST(request) {
     );
   }
 }
-
