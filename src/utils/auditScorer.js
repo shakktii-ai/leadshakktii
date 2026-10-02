@@ -186,8 +186,8 @@ export function calculateAuditAnalysis(selectedAnswers = {}, formData = {}) {
         q1Points >= 4
           ? 'Buying shared numbers forces price discounting against 4–5 local competitors.'
           : q1Points >= 2
-          ? 'Rising cost-per-lead is eroding channel partner margins over time.'
-          : 'Direct inquiries protect your commission margins with 100% exclusivity.',
+            ? 'Rising cost-per-lead is eroding channel partner margins over time.'
+            : 'Direct inquiries protect your commission margins with 100% exclusivity.',
       whatItMeans:
         'National property portals monetize by selling the same buyer inquiry simultaneously to 4 to 5 channel partners, creating an aggressive price war.',
       whyItMatters:
@@ -209,8 +209,8 @@ export function calculateAuditAnalysis(selectedAnswers = {}, formData = {}) {
         q2Points >= 4
           ? 'Sending PDFs or raw project names prompts clients to search online, where other brokers intercept them.'
           : q2Points >= 2
-          ? 'Verbal project recommendations lack visual retention and brand anchoring.'
-          : 'Branded catalog links keep client browsing contained inside your ecosystem.',
+            ? 'Verbal project recommendations lack visual retention and brand anchoring.'
+            : 'Branded catalog links keep client browsing contained inside your ecosystem.',
       whatItMeans:
         'When you send generic builder PDFs or project names on WhatsApp, buyers search Google where competitor paid ads and rival portals intercept them.',
       whyItMatters:
@@ -232,8 +232,8 @@ export function calculateAuditAnalysis(selectedAnswers = {}, formData = {}) {
         q3Points >= 4
           ? `Your ${formData.crmLeadVolume || 'existing database'} is underutilized, forcing recurring spends on new ad packages.`
           : q3Points >= 2
-          ? 'Unsegmented WhatsApp blasts often result in low open rates and buyer fatigue.'
-          : 'Interactive launch pages track past client re-engagement automatically.',
+            ? 'Unsegmented WhatsApp blasts often result in low open rates and buyer fatigue.'
+            : 'Interactive launch pages track past client re-engagement automatically.',
       whatItMeans:
         'Historical buyer inquiries stored in your CRM or phonebook represent pre-qualified buyers who are already familiar with your agency.',
       whyItMatters:
@@ -253,8 +253,8 @@ export function calculateAuditAnalysis(selectedAnswers = {}, formData = {}) {
         q7Points >= 4
           ? 'Heavy PDFs slow down mobile buyers on 4G/5G connections and clutter storage.'
           : q7Points >= 2
-          ? 'Unorganized WhatsApp image threads lose critical floor plan and pricing context.'
-          : 'Fast mobile web catalogs provide instant floor plan and amenity previews.',
+            ? 'Unorganized WhatsApp image threads lose critical floor plan and pricing context.'
+            : 'Fast mobile web catalogs provide instant floor plan and amenity previews.',
       whatItMeans:
         'Over 82% of modern property discovery and floor plan evaluation occurs on smartphones while buyers are on the go.',
       whyItMatters:
