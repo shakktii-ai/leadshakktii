@@ -28,7 +28,7 @@ export default function Hero({ onStartAudit, onOpenMobileForm }) {
             {/* Main Headline */}
             <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-brand-dark leading-tight mb-3 sm:mb-4">
               Stop Losing Your Buyers to{' '}
-              <span className="text-brand-primary">Other Agents</span>
+              <span className="text-brand-primary">Competitors</span>
             </h1>
 
             {/* Subtitle */}
